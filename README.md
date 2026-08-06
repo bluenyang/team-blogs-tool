@@ -45,7 +45,16 @@ pnpm lint
 pnpm format
 pnpm typecheck
 pnpm changeset          # 패키지 변경 기록
+pnpm version-packages   # 버전 bump
+pnpm release            # build + npm publish
 ```
+
+## GitHub Actions
+
+- `CI` — PR/push 시 lint · typecheck · build
+- `Release` — Changesets Version PR 또는 `pnpm release` (npm Trusted Publisher / OIDC)
+
+최초 publish는 로컬에서 한 뒤, npm 패키지 설정에서 Trusted Publisher에 workflow `release.yml`을 연결하세요.
 
 ## 환경 변수 (앱)
 

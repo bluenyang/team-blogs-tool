@@ -128,8 +128,19 @@ BLOG_AUTHOR=
 ## 다음 할 일 (우선순위)
 
 1. (선택) `GET /api/categories` 전용 API 추가
-2. 패키지 npm publish + Changesets 버전 관리 시작
-3. GitHub remote 연결 후 CLI 기본 template 소스 문서화
+2. 로컬 최초 `pnpm release`로 npm 패키지 생성 후 Trusted Publisher 연결
+3. GitHub Actions Release가 org 기본 브랜치에서 publish하는지 확인
+
+## CI / Release
+
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — lint · typecheck · build
+- [`.github/workflows/release.yml`](.github/workflows/release.yml) — Changesets Version PR / publish (OIDC Trusted Publisher, `NPM_TOKEN` 없음)
+
+Trusted Publisher (npm 패키지 설정):
+
+- Repository: GitHub org/repo (예: `team-croffle/blogs`)
+- Workflow filename: `release.yml` (경로 없이 파일명만)
+- Environment: 비움 (workflow에 environment 미사용)
 
 ## CLI
 
