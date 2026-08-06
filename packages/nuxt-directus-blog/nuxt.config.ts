@@ -11,6 +11,8 @@ export default defineNuxtConfig({
       blogTitle: '',
       blogDescription: '',
       blogAuthor: '',
+      profileImageUrl: '',
+      githubUrl: '',
     },
   },
 });
