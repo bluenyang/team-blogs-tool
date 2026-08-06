@@ -1,6 +1,5 @@
 /**
- * Directus blog CMS core — query / mapper / types will live here.
- * Extracted from the reference Nuxt blog (my-blog).
+ * Directus blog CMS core — query / mapper / types extracted from my-blog.
  */
 export const PACKAGE_NAME = '@croffledev/directus-blog-core' as const;
 
@@ -18,3 +17,5 @@ export function createBlogClientOptions(options: BlogClientOptions): BlogClientO
   }
   return options;
 }
+
+export type * from './types/index.js';
