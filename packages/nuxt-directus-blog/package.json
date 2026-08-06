@@ -16,10 +16,14 @@
     "typecheck": "echo \"layer typecheck runs via consuming Nuxt app\""
   },
   "dependencies": {
-    "@croffledev/directus-blog-core": "workspace:*"
+    "@croffledev/directus-blog-core": "workspace:*",
+    "feed": "^6.0.0"
   },
   "peerDependencies": {
     "nuxt": "^4.0.0"
+  },
+  "devDependencies": {
+    "nuxt": "^4.5.0"
   },
   "publishConfig": {
     "access": "restricted"
