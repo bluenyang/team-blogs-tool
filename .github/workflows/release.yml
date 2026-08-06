@@ -50,8 +50,6 @@ jobs:
           publish: pnpm release
           commit: 'ci: version packages'
           title: 'ci: version packages'
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Keep empty so changesets/action does not inject a fake token
-          # that blocks npm OIDC Trusted Publishing.
-          NPM_TOKEN: ''
