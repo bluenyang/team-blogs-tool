@@ -30,6 +30,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Build Directus Blog Core
+        run: pnpm --filter @croffledev/directus-blog-core build
+
       - name: Typecheck
         run: pnpm typecheck
 
