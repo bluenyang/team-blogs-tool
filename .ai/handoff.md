@@ -105,21 +105,6 @@ blogs/
   packageManager: pnpm@10.18.3
 ```
 
-## 진행 상태
-
-- [x] `directus-blog-core` — types / queries / utils / mappers / `createBlogCore`
-  - 이미지 URL은 `AssetUrlResolver` 주입 (`createBlogMappers` / `createBlogCore`)
-  - Nuxt `useRuntimeConfig` 의존 제거
-
-## 다음 할 일 (우선순위)
-
-1. Nitro API(`server/api/*`, rss) + `useDirectus`/`useQuery` + data composables를
-   `packages/nuxt-directus-blog` Layer로 이전
-2. (선택) `GET /api/categories` 전용 API 추가
-3. `apps/template-blog`를 Nuxt 앱으로 채우고
-   사이트명/프로필을 env·config로 주입 (BlueNyang 하드코딩 제거)
-4. Changesets로 코어 패키지 버전 관리 시작
-
 ## 환경 변수 계약
 
 ```env
@@ -128,7 +113,26 @@ BLOG_SLUG=
 DIRECTUS_URL=
 EMAIL_ADDRESS=
 HOMEPAGE_URL=
+BLOG_TITLE=
+BLOG_DESCRIPTION=
+BLOG_AUTHOR=
 ```
+
+## 진행 상태
+
+- [x] `directus-blog-core` — types / queries / utils / mappers / `createBlogCore`
+  - 이미지 URL은 `AssetUrlResolver` 주입 (`createBlogMappers` / `createBlogCore`)
+  - Nuxt `useRuntimeConfig` 의존 제거
+- [x] `nuxt-directus-blog` Layer — Nitro API + RSS + data composables
+  - `useBlogCore` / `useQuery` / `useDirectus`
+  - RSS 브랜드 필드는 `blogTitle` / `blogDescription` / `blogAuthor` runtimeConfig
+
+## 다음 할 일 (우선순위)
+
+1. (선택) `GET /api/categories` 전용 API 추가
+2. `apps/template-blog`를 Nuxt 앱으로 채우고
+   사이트명/프로필을 env·config로 주입 (BlueNyang 하드코딩 제거)
+3. Changesets로 코어 패키지 버전 관리 시작
 
 ## 작업 시작 위치
 
