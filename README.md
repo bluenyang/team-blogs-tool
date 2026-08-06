@@ -28,6 +28,16 @@ packages/
 ```bash
 corepack enable
 pnpm install
+cp apps/template-blog/.env.example apps/template-blog/.env
+pnpm dev
+```
+
+## CLI로 새 블로그 만들기
+
+```bash
+pnpm create croffle-blog my-blog
+# 또는
+npx create-croffle-blog my-blog
 ```
 
 ```bash
@@ -48,11 +58,13 @@ HOMEPAGE_URL=https://www.example.com
 BLOG_TITLE=Example Blog
 BLOG_DESCRIPTION=Team engineering notes
 BLOG_AUTHOR=Example
+PROFILE_IMAGE_URL=
+GITHUB_URL=
 ```
 
 ## 로드맵
 
 1. ~~`my-blog`의 `server/features` · `shared/types`를 `directus-blog-core`로 이전~~
 2. ~~Nitro API · composable을 `nuxt-directus-blog` Layer로 이전~~
-3. `template-blog`를 Nuxt 앱으로 채우고 브랜드 설정만 env/config로 주입
+3. ~~`template-blog` Nuxt 앱 + `create-croffle-blog` CLI~~
 4. Changesets로 코어 패키지 버전 배포

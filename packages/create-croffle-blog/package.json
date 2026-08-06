@@ -1,0 +1,38 @@
+{
+  "name": "create-croffle-blog",
+  "version": "0.0.0",
+  "description": "Scaffold a Croffle Directus Nuxt blog from the official template",
+  "type": "module",
+  "bin": {
+    "create-croffle-blog": "./bin/create-croffle-blog.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "template"
+  ],
+  "scripts": {
+    "sync-template": "node ./scripts/sync-template.mjs",
+    "prepack": "node ./scripts/sync-template.mjs",
+    "typecheck": "echo \"create-croffle-blog is plain ESM — no typecheck\""
+  },
+  "dependencies": {
+    "citty": "^0.1.6",
+    "consola": "^3.4.2",
+    "nypm": "^0.6.2",
+    "pathe": "^2.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "nuxt",
+    "directus",
+    "blog",
+    "croffle",
+    "create"
+  ]
+}

@@ -121,18 +121,29 @@ BLOG_AUTHOR=
 ## 진행 상태
 
 - [x] `directus-blog-core` — types / queries / utils / mappers / `createBlogCore`
-  - 이미지 URL은 `AssetUrlResolver` 주입 (`createBlogMappers` / `createBlogCore`)
-  - Nuxt `useRuntimeConfig` 의존 제거
 - [x] `nuxt-directus-blog` Layer — Nitro API + RSS + data composables
-  - `useBlogCore` / `useQuery` / `useDirectus`
-  - RSS 브랜드 필드는 `blogTitle` / `blogDescription` / `blogAuthor` runtimeConfig
+- [x] `apps/template-blog` — Nuxt UI 스캐폴드 (브랜드 env 주입)
+- [x] `create-croffle-blog` — `pnpm create croffle-blog` / `npx create-croffle-blog`
 
 ## 다음 할 일 (우선순위)
 
 1. (선택) `GET /api/categories` 전용 API 추가
-2. `apps/template-blog`를 Nuxt 앱으로 채우고
-   사이트명/프로필을 env·config로 주입 (BlueNyang 하드코딩 제거)
-3. Changesets로 코어 패키지 버전 관리 시작
+2. 패키지 npm publish + Changesets 버전 관리 시작
+3. GitHub remote 연결 후 CLI 기본 template 소스 문서화
+
+## CLI
+
+```bash
+pnpm create croffle-blog my-blog
+# 또는
+npx create-croffle-blog my-blog
+```
+
+모노레포에서 template sync:
+
+```bash
+pnpm --filter create-croffle-blog sync-template
+```
 
 ## 작업 시작 위치
 
