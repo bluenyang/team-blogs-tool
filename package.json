@@ -1,0 +1,38 @@
+{
+  "name": "@croffledev/blogs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @croffledev/template-blog dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "oxlint . --fix",
+    "format": "oxfmt --write",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm publish -r --access public"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@types/node": "^26.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.1.0",
+    "oxfmt": "^0.59.0",
+    "oxlint": "^1.74.0",
+    "typescript": "^6.0.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "oxlint --fix",
+      "oxfmt --no-error-on-unmatched-pattern"
+    ],
+    "*.{json,yaml,md,vue,html}": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ]
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.18.3"
+}

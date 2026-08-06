@@ -1,0 +1,29 @@
+{
+  "name": "@croffledev/directus-blog-core",
+  "version": "0.0.0",
+  "description": "Directus GraphQL query, mapper, and DTO types for Croffle blogs",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "@directus/sdk": "^23.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

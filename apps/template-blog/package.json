@@ -1,0 +1,14 @@
+{
+  "name": "@croffledev/template-blog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"template-blog scaffold — Nuxt app will be added next\"",
+    "build": "echo \"template-blog scaffold — Nuxt app will be added next\"",
+    "typecheck": "echo \"template-blog scaffold — typecheck pending Nuxt app\""
+  },
+  "dependencies": {
+    "@croffledev/nuxt-directus-blog": "workspace:*"
+  }
+}

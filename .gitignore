@@ -1,0 +1,36 @@
+# Nuxt / Nitro
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Package managers
+.pnp.*
+.yarn/*
+.pnpm-store
+
+# TypeScript
+*.tsbuildinfo
+
+# Deploy
+.netlify
+.wrangler

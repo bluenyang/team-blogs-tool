@@ -1,0 +1,27 @@
+{
+  "name": "@croffledev/nuxt-directus-blog",
+  "version": "0.0.0",
+  "description": "Nuxt layer: Nitro API routes and composables for Croffle Directus blogs",
+  "type": "module",
+  "exports": {
+    ".": "./nuxt.config.ts"
+  },
+  "files": [
+    "nuxt.config.ts",
+    "server",
+    "app",
+    "shared"
+  ],
+  "scripts": {
+    "typecheck": "echo \"layer typecheck runs via consuming Nuxt app\""
+  },
+  "dependencies": {
+    "@croffledev/directus-blog-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "nuxt": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
