@@ -1,32 +1,27 @@
 <script setup lang="ts">
   const profileData = useProfile();
-  const { sidebar } = useSidebar();
-  const totalPosts = computed(() => sidebar.value?.profile.totalPosts ?? 0);
 </script>
 
 <template>
-  <div class="flex flex-col space-y-3 px-2 pb-4">
-    <div class="flex items-center justify-start gap-4">
-      <img
-        v-if="profileData.githubProfileImage"
-        :src="profileData.githubProfileImage"
-        :alt="profileData.nickname"
-        class="size-10 rounded-full border-2 border-white"
+  <div class="flex flex-col space-y-3 px-2 py-4">
+    <div class="flex flex-col items-center justify-center gap-4">
+      <NuxtImg
+        src="/images/croffle.png"
+        alt="Croffle Dev."
+        class="size-24 rounded-full"
+        format="webp"
+        quality="80"
+        fetchpriority="high"
+        preload
       />
       <div class="space-y-1">
-        <h3 class="text-start text-xl font-bold">{{ profileData.nickname }}</h3>
+        <h3 class="text-center text-xl font-bold">{{ profileData.nickname }}</h3>
         <p class="font-jua text-muted-foreground text-start text-sm">
           {{ profileData.desc }}
         </p>
       </div>
     </div>
-    <div class="flex items-center justify-start gap-6">
-      <div class="flex items-center gap-1">
-        <span class="font-jua text-base font-bold">{{ totalPosts }}</span>
-        <span class="text-muted-foreground flex text-sm">포스트</span>
-      </div>
-    </div>
-    <div class="flex justify-start gap-3">
+    <div class="flex justify-center gap-3">
       <a
         v-for="(link, index) in profileData.link"
         :key="index"

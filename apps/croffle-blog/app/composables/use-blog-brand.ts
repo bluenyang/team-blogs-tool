@@ -1,3 +1,5 @@
+import croffleImg from '/images/croffle.png?url';
+
 export type ProfileLink = {
   name: string;
   url: string;
@@ -10,7 +12,7 @@ export type ProfileData = {
   desc: string;
   nickname: string;
   slug: string;
-  githubProfileImage: string;
+  profileImage: string;
   link: ProfileLink[];
 };
 
@@ -33,7 +35,6 @@ export function useProfile() {
   return computed<ProfileData>(() => {
     const homepageUrl = (config.public.homepageUrl as string) || '';
     const githubUrl = (config.public.githubUrl as string) || '';
-    const profileImageUrl = (config.public.profileImageUrl as string) || '';
 
     const link: ProfileLink[] = [];
     if (githubUrl) {
@@ -49,7 +50,7 @@ export function useProfile() {
       desc: description.value,
       nickname: author.value,
       slug: (config.public.blogSlug as string) || '',
-      githubProfileImage: profileImageUrl,
+      profileImage: croffleImg,
       link,
     };
   });
