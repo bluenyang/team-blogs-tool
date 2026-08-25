@@ -17,9 +17,9 @@
     "typecheck": "echo \"create-croffle-blog is plain ESM — no typecheck\""
   },
   "dependencies": {
-    "citty": "^0.1.6",
+    "citty": "^0.2.2",
     "consola": "^3.4.2",
-    "nypm": "^0.6.2",
+    "nypm": "^0.6.9",
     "pathe": "^2.0.3"
   },
   "publishConfig": {

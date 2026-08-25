@@ -18,7 +18,7 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@directus/sdk": "^23.0.0"
+    "@directus/sdk": "^25.0.0"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

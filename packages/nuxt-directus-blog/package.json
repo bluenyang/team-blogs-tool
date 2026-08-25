@@ -20,10 +20,10 @@
     "feed": "^6.0.0"
   },
   "peerDependencies": {
-    "nuxt": "^4.0.0"
+    "nuxt": "^4.5.2"
   },
   "devDependencies": {
-    "nuxt": "^4.5.0"
+    "nuxt": "^4.5.2"
   },
   "publishConfig": {
     "access": "public"

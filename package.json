@@ -14,12 +14,12 @@
     "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
-    "@types/node": "^26.1.1",
+    "@changesets/cli": "^3.0.1",
+    "@types/node": "^26.3.0",
     "husky": "^9.1.7",
-    "lint-staged": "^17.1.0",
-    "oxfmt": "^0.59.0",
-    "oxlint": "^1.74.0",
+    "lint-staged": "^17.3.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "typescript": "^6.0.3"
   },
   "lint-staged": {
@@ -34,5 +34,5 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.18.3"
+  "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000"
 }
