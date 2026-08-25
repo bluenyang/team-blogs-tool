@@ -16,8 +16,11 @@
   }
 
   const iconName = computed<string | null>(() => {
-    if (!props.language) return null;
-    const icon = langIcon[props.language];
+    if (!props.language) {
+      return null;
+    }
+    const icon = langIcon[props.language.toLowerCase()];
+
     return icon ? `devicon:${icon}` : null;
   });
 </script>

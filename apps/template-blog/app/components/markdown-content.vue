@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { ComarkTree } from 'comark';
+  import type { MarkdownDocument } from 'comark';
 
   interface MarkdownContentProps {
     postContent: string;
@@ -10,7 +10,7 @@
 
   const { postContent, series, currentPostIdx } = defineProps<MarkdownContentProps>();
 
-  const tree = ref<ComarkTree | null>(null);
+  const tree = ref<MarkdownDocument | null>(null);
 
   onMounted(async () => {
     if (!postContent) {

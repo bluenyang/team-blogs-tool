@@ -1,6 +1,6 @@
 import toc from 'comark/plugins/toc';
 import highlight from '@comark/nuxt/plugins/highlight';
-import oneDarkPro from '@shikijs/themes/one-dark-pro';
+import oneDarkPro from 'shiki/dist/themes/one-dark-pro.mjs';
 import { shikiLangList } from '~/constants/shiki-lang-list';
 import unwrapImages from '~/utils/comark-unwrap-images';
 

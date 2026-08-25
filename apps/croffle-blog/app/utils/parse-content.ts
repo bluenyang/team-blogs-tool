@@ -1,8 +1,8 @@
-import { parse } from '@comark/nuxt/parse';
-import type { ComarkTree } from 'comark';
+import { parseMarkdown } from '@comark/nuxt/parse';
+import type { MarkdownDocument } from 'comark';
 
-export async function parseContent(content: string): Promise<ComarkTree> {
-  return parse(content, {
+export async function parseContent(content: string): Promise<MarkdownDocument> {
+  return parseMarkdown(content, {
     plugins: comarkPlugins,
   });
 }

@@ -1,19 +1,19 @@
 import { defineComarkPlugin } from 'comark';
-import type { ComarkElement, ComarkNode } from 'comark';
+import type { ElementNode, Node } from 'comark';
 import { visit } from 'comark/utils';
 
-function isWhitespaceText(node: ComarkNode): boolean {
+function isWhitespaceText(node: Node): boolean {
   return typeof node === 'string' && node.trim() === '';
 }
 
-function isElement(node: ComarkNode): node is ComarkElement {
+function isElement(node: Node): node is ElementNode {
   return Array.isArray(node) && typeof node[0] === 'string';
 }
 
-function getMeaningfulChildren(node: ComarkElement): ComarkNode[] {
-  const children: ComarkNode[] = [];
+function getMeaningfulChildren(node: ElementNode): Node[] {
+  const children: Node[] = [];
   for (let i = 2; i < node.length; i++) {
-    const child = node[i] as ComarkNode;
+    const child = node[i] as Node;
     if (!isWhitespaceText(child)) {
       children.push(child);
     }
@@ -21,7 +21,7 @@ function getMeaningfulChildren(node: ComarkElement): ComarkNode[] {
   return children;
 }
 
-function isImageOnlyParagraph(node: ComarkNode): node is ComarkElement {
+function isImageOnlyParagraph(node: Node): node is ElementNode {
   if (!isElement(node) || node[0] !== 'p') {
     return false;
   }
