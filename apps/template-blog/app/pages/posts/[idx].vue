@@ -6,6 +6,7 @@
   const postIdx = parseInt(idxParam, 10);
 
   const { settings } = useSetting();
+  const { siteName } = useBlogBrand();
   const { post, pending, error } = await usePostDetail(postIdx);
   const series = computed(() => post.value?.series?.[0]);
   const seriesName = computed(() => series.value?.name);
@@ -34,12 +35,19 @@
     canonicalPath.value ? `${config.public.blogUrl}${canonicalPath.value}` : undefined,
   );
 
-  // /posts/12 와 /posts/12-wrong-slug 를 정규 URL로 합쳐 중복 콘텐츠를 막음
+  // /posts/12 와 /posts/12-wrong-slug 를 정규 URL로 합쳐 중복 콘텐츠를 막음.
+  // route.path는 상황에 따라 이중 인코딩되므로(한글 슬러그) 경로 문자열 대신
+  // 디코딩한 라우트 param을 비교한다. 아니면 자기 자신으로 301이 반복된다.
+  const currentIdxParam = computed(() => decodeRouteSlug(String(route.params.idx ?? '')));
+  const canonicalIdxParam = computed(() =>
+    post.value ? `${post.value.postIdx}-${post.value.slug}` : null,
+  );
+
   watch(
-    canonicalPath,
-    (path) => {
-      if (!path || route.path === path) return;
-      navigateTo(path, { redirectCode: 301, replace: true });
+    canonicalIdxParam,
+    (expected) => {
+      if (!expected || currentIdxParam.value === expected) return;
+      navigateTo(`/posts/${expected}`, { redirectCode: 301, replace: true });
     },
     { immediate: true },
   );
@@ -61,7 +69,7 @@
     ogUrl: canonicalUrl,
     ogType: 'article',
     ogLocale: 'ko_KR',
-    ogSiteName: () => useBlogBrand().siteName.value,
+    ogSiteName: siteName,
     twitterCard: 'summary_large_image',
     articlePublishedTime: () => post.value?.publishedAt,
     articleModifiedTime: () => post.value?.updatedAt,

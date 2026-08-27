@@ -7,6 +7,7 @@
   }>();
 
   const config = useRuntimeConfig();
+  const { siteName } = useBlogBrand();
 
   const limit = 10;
   const currentPage = ref(1);
@@ -149,7 +150,7 @@
         : `${config.public.blogUrl}/favicon.ico`,
     ogType: 'website',
     ogLocale: 'ko_KR',
-    ogSiteName: () => useBlogBrand().siteName.value,
+    ogSiteName: siteName,
     // 검색 결과 페이지는 색인하지 않아 thin/duplicate를 피함
     robots: () => (resolvedType.value === 'search' ? 'noindex, follow' : undefined),
   });

@@ -8,16 +8,20 @@
     currentPostIdx: number;
   }
 
-  const { postContent, series, currentPostIdx } = defineProps<MarkdownContentProps>();
+  const { postContent, postIdx, series, currentPostIdx } = defineProps<MarkdownContentProps>();
 
-  const tree = ref<MarkdownDocument | null>(null);
-
-  onMounted(async () => {
-    if (!postContent) {
-      return;
-    }
-    tree.value = await parseContent(postContent);
-  });
+  /**
+   * 본문은 서버에서 파싱한다.
+   *
+   * onMounted에서 파싱하면 SSR HTML에 본문이 한 글자도 실리지 않아 크롤러가 제목·요약만 본다.
+   * useAsyncData로 옮기면 본문·코드 하이라이팅이 SSR 결과에 들어가고, payload로 그대로
+   * 하이드레이션되어 클라이언트에서 다시 파싱하지 않는다.
+   */
+  const { data: tree } = await useAsyncData<MarkdownDocument | null>(
+    () => `post-tree-${postIdx}`,
+    () => (postContent ? parseContent(postContent) : Promise.resolve(null)),
+    { watch: [() => postIdx] },
+  );
 </script>
 
 <template>
@@ -49,7 +53,7 @@
       />
 
       <!-- Markdown Content -->
-      <ComarkRenderer v-if="tree" :tree="tree" />
+      <MarkdownDocument v-if="tree" :value="tree" />
     </main>
     <!-- Floating Nav (TOC) - Left Side -->
     <aside v-if="postContent" class="hidden w-52 shrink-0 rounded-md lg:sticky lg:top-36 lg:block">
