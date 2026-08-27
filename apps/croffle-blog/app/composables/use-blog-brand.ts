@@ -24,7 +24,7 @@ export function useBlogBrand() {
 
   /** 워드마크를 "Croffle Dev." + "Blog"로 쪼개 accent를 뒷단어에만 준다. */
   const wordmark = computed(() => {
-    const parts = title.value.trim().split(/\s+/);
+    const parts = title.value.trim().split(' ');
     if (parts.length < 2) {
       return { lead: title.value, accent: '' };
     }

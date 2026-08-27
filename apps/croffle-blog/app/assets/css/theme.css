@@ -40,6 +40,10 @@
   --border-2: rgba(255, 255, 255, 0.1);
   --border-hover: rgba(255, 255, 255, 0.14);
 
+  /* 헤더 — 최상단(꽉 찬 바) / 스크롤 후(떠 있는 독) */
+  --header-bg: rgba(255, 255, 255, 0.03);
+  --header-tp: rgba(255, 255, 255, 0.06);
+
   --code-bg: rgba(0, 0, 0, 0.35);
   --syntax-number: oklch(0.72 0.11 230);
   --syntax-comment: rgba(244, 239, 233, 0.35);
@@ -181,6 +185,78 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-2);
     box-shadow: var(--shadow-feature);
+  }
+
+  /*
+   * 스크롤 반응 헤더.
+   * 최상단에서는 화면 폭을 꽉 채운 sticky 바, 스크롤할수록 좌우가 좁혀지고 모서리가 둥글어지며
+   * 떠 있는 독으로 바뀐다.
+   *
+   * 진행도(--dock-p, 0~1)만 스크립트에서 갱신하고 기하 계산은 CSS가 맡는다. 좌우 여백과 반경은
+   * 뷰포트마다 목표값이 달라서, 스크립트가 픽셀을 직접 써 넣으면 반응형이 깨진다.
+   */
+  .site-dock {
+    --dock-p: 0;
+    --dock-inset: 14px;
+    --dock-radius: 20px;
+
+    position: absolute;
+    top: calc(var(--dock-p) * 12px);
+    left: calc(var(--dock-p) * var(--dock-inset));
+    right: calc(var(--dock-p) * var(--dock-inset));
+    margin-inline: auto;
+    /*
+     * 최상단에서는 화면을 꽉 채우고(100%), 독이 될수록 본문과 같은 1280px로 좁아진다.
+     * 폭을 처음부터 1280px로 묶어 두면 넓은 화면에서 최상단 바 양옆에 빈 공간이 남는다.
+     */
+    max-width: calc(100% - var(--dock-p) * (100% - 1280px));
+    height: calc(64px - var(--dock-p) * 8px);
+    border-radius: calc(var(--dock-p) * var(--dock-radius));
+    /* 읽기 진행 바가 둥근 모서리를 따라 잘리도록 */
+    overflow: hidden;
+    background: var(--header-bg);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    /* 테두리·상단 하이라이트는 독이 될수록 또렷해진다 */
+    border: 1px solid rgba(255, 255, 255, calc(var(--dock-p) * 0.1));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, calc(var(--dock-p) * 0.07));
+    transition:
+      background-color 500ms ease,
+      box-shadow 500ms ease;
+  }
+
+  /*
+   * 읽기 진행 바 — 독 안쪽 하단에 붙는다.
+   * 독의 자식이라 좌우 여백·폭·모서리가 헤더와 자동으로 같이 움직인다.
+   */
+  .dock-progress {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .dock-progress > span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+    transform-origin: left center;
+    transition: transform 100ms ease-out;
+  }
+
+  .site-dock[data-docked='true'] {
+    background: var(--header-tp);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      var(--shadow-card);
+  }
+
+  @media (min-width: 640px) {
+    .site-dock {
+      --dock-inset: 20px;
+      --dock-radius: 24px;
+    }
   }
 
   /* 떠 있는 독 헤더 / 하단 탭바 */

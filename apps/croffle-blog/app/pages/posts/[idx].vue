@@ -26,6 +26,9 @@
   );
   const { activeId } = useActiveHeading(toc);
 
+  // 진행 바는 헤더 독 안에서 그려진다. 여기서는 스크롤 추적만 켠다.
+  useTrackReadingProgress();
+
   const series = computed(() => post.value?.series?.[0]);
   const category = computed(() => post.value?.categories?.[0]);
   const minutes = computed(() => readingMinutes(post.value?.content));
@@ -113,8 +116,6 @@
 
 <template>
   <div class="mx-auto w-full max-w-7xl px-5 sm:px-10">
-    <ReadingProgress v-if="post" />
-
     <div v-if="pending && !post" class="grid items-start gap-9 py-6 lg:grid-cols-[1fr_232px]">
       <div class="flex max-w-160 animate-pulse flex-col gap-5">
         <div class="skeleton h-4 w-40" />
@@ -141,7 +142,7 @@
     </EmptyState>
 
     <div v-else class="grid items-start gap-9 pt-4 pb-11.5 lg:grid-cols-[1fr_232px]">
-      <article class="flex max-w-160 min-w-0 flex-col gap-5.5">
+      <article class="flex min-w-0 flex-col gap-5.5">
         <header class="flex flex-col gap-4">
           <div class="flex flex-wrap items-center gap-2.25">
             <NuxtLink
@@ -185,7 +186,7 @@
             loading="eager"
             fetchpriority="high"
             preload
-            class="h-42.5 w-full object-cover sm:h-57.5"
+            class="h-60 w-full object-cover sm:h-120"
           />
         </div>
 
