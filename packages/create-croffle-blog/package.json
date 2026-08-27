@@ -1,6 +1,6 @@
 {
   "name": "create-croffle-blog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a Croffle Directus Nuxt blog from the official template",
   "type": "module",
   "bin": {
