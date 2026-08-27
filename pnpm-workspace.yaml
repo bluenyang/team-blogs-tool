@@ -3,5 +3,7 @@ packages:
   - 'packages/*'
 allowBuilds:
   esbuild: true
+  # wrangler(Cloudflare Workers CLI)의 로컬 런타임 시뮬레이터. `wrangler dev`에만 쓰인다.
+  workerd: true
 minimumReleaseAgeExclude:
   - '@types/node@26.3.0'

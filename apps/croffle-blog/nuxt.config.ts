@@ -96,9 +96,15 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2026-06-15',
 
+  // ipx(@nuxt/image의 기본 provider)는 sharp라는 네이티브 바이너리로 리사이즈한다.
+  // Cloudflare Workers는 V8 isolate라 네이티브 애드온을 못 돌린다 — provider를 켜 두면
+  // 서버 번들에 sharp가 딸려 들어가 빌드/런타임이 깨진다.
+  // 실제 이미지 변환은 Directus asset URL의 쿼리 파라미터(mapper의 ImageQuery)로 이미
+  // 처리하고 있어서(post-card 썸네일, 아바타, 커버 등), ipx가 없어도 손해가 없다.
+  // 로고처럼 CMS를 안 거치는 정적 자산은 미리 리사이즈해 둔 파일을 그대로 서빙한다
+  // (app/components/brand-mark.vue 참고).
   image: {
-    format: ['webp'],
-    quality: 80,
+    provider: 'none',
   },
 
   vite: {

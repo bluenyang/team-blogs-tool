@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
+    "build:cloudflare": "NITRO_PRESET=cloudflare_module nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "deploy": "pnpm build:cloudflare && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@comark/nuxt": "^0.6.2",
@@ -44,6 +47,7 @@
     "shiki": "^4.4.3",
     "typescript": "^6.0.3",
     "vite": "^8.2.2",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.11",
+    "wrangler": "^4.30.0"
   }
 }
