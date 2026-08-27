@@ -1,60 +1,30 @@
 <script setup lang="ts">
-  defineProps<{
+  const { as } = defineProps<{
     as?: 'note' | 'tip' | 'important' | 'warning' | 'caution';
   }>();
 
-  const config = {
-    note: {
-      icon: 'i-lucide-info',
-      label: 'Note',
-      borderColor: 'border-blue-500',
-      textColor: 'text-blue-500',
-    },
-    tip: {
-      icon: 'i-lucide-lightbulb',
-      label: 'Tip',
-      borderColor: 'border-green-500',
-      textColor: 'text-green-500',
-    },
-    important: {
-      icon: 'i-lucide-message-square-warning',
-      label: 'Important',
-      borderColor: 'border-purple-500',
-      textColor: 'text-purple-500',
-    },
-    warning: {
-      icon: 'i-lucide-triangle-alert',
-      label: 'Warning',
-      borderColor: 'border-amber-600',
-      textColor: 'text-amber-600',
-    },
-    caution: {
-      icon: 'i-lucide-flame',
-      label: 'Caution',
-      borderColor: 'border-red-500',
-      textColor: 'text-red-500',
-    },
-  };
+  const CALLOUTS = {
+    note: { icon: 'lucide:info', label: 'Note' },
+    tip: { icon: 'lucide:lightbulb', label: 'Tip' },
+    important: { icon: 'lucide:message-square-warning', label: 'Important' },
+    warning: { icon: 'lucide:triangle-alert', label: 'Warning' },
+    caution: { icon: 'lucide:flame', label: 'Caution' },
+  } as const;
+
+  const callout = computed(() => (as ? CALLOUTS[as] : null));
 </script>
 
 <template>
-  <div
-    :class="
-      cn(
-        'border-blockquote-accent bg-block-bg my-4 rounded-md border-s-3 p-4',
-        as && config[as].borderColor,
-      )
-    "
+  <blockquote
+    class="my-5 flex gap-3.5 rounded-lg border border-[oklch(0.785_0.104_69.8/0.22)] bg-[oklch(0.785_0.104_69.8/0.1)] px-4.5 py-4"
   >
-    <div v-if="as" class="flex items-center gap-2">
-      <Icon
-        :name="config[as].icon"
-        :class="cn('text-blockquote-accent', as && config[as].textColor)"
-      />
-      <span :class="cn('text-blockquote-accent font-jua text-lg', as && config[as].textColor)">
-        {{ config[as].label }}
-      </span>
+    <div class="bg-primary w-0.75 shrink-0 rounded-xs" aria-hidden="true" />
+    <div class="text-fg-80 min-w-0 flex-1 text-[14px] leading-[1.75] [&>p]:my-0 [&>p+p]:mt-3">
+      <div v-if="callout" class="text-primary-soft mb-2 flex items-center gap-2 font-semibold">
+        <Icon :name="callout.icon" class="size-4" />
+        <span class="text-[13px]">{{ callout.label }}</span>
+      </div>
+      <slot />
     </div>
-    <slot />
-  </div>
+  </blockquote>
 </template>

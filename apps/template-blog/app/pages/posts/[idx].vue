@@ -6,7 +6,7 @@
   const postIdx = parseInt(idxParam, 10);
 
   const { settings } = useSetting();
-  const { post, pending, error } = usePostDetail(postIdx);
+  const { post, pending, error } = await usePostDetail(postIdx);
   const series = computed(() => post.value?.series?.[0]);
   const seriesName = computed(() => series.value?.name);
 

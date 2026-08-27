@@ -4,7 +4,5 @@
 </script>
 
 <template>
-  <div>
-    <FilteredPostsView :series="slug" />
-  </div>
+  <FilteredPostsView :series="slug" />
 </template>

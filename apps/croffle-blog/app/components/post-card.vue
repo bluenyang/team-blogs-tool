@@ -1,53 +1,54 @@
 <script setup lang="ts">
-  const props = defineProps<{ post: PostItem }>();
+  import type { PostItem } from '@croffledev/directus-blog-core';
 
-  const { onNavigate, isPending } = useNavFeedback();
+  const { post, priority = false } = defineProps<{
+    post: PostItem;
+    /** 첫 화면에 보이는 카드만 eager 로딩 */
+    priority?: boolean;
+  }>();
 
-  const formattedDate = computed(() => formatPostDateYmd(props.post.publishedAt));
-
-  const categories = computed(() => {
-    if (!props.post.categories) return [];
-    return props.post.categories;
-  });
-
-  const linkKey = computed(() => `post-${props.post.slug}`);
+  const category = computed(() => primaryCategory(post));
+  const authorName = computed(() => authorDisplayName(post.author));
 </script>
 
 <template>
   <NuxtLink
-    :to="`/posts/${post.postIdx}-${post.slug}`"
-    :aria-busy="isPending(linkKey)"
-    :class="
-      cn(
-        'group bg-card hover:bg-card-hover hover:border-border flex flex-col overflow-hidden rounded-2xl border border-transparent transition-all',
-        isPending(linkKey) && 'pointer-events-none opacity-60',
-      )
-    "
-    @click="onNavigate(linkKey)"
+    :to="postPath(post)"
+    class="glass glass-interactive group flex flex-col overflow-hidden rounded-2xl"
   >
-    <div class="bg-muted h-2 w-full dark:bg-white/10"></div>
-    <div class="p-5">
-      <!-- Top Meta -->
-      <div class="text-muted-foreground mb-3 flex items-center text-sm">
-        <span>{{ categories.length > 0 ? categories[0] : 'Uncategorized' }}</span>
-      </div>
+    <div class="bg-glass-2 relative h-28 shrink-0 overflow-hidden">
+      <NuxtImg
+        v-if="post.thumbnail"
+        :src="post.thumbnail"
+        :alt="post.title"
+        width="420"
+        height="224"
+        sizes="sm:100vw md:50vw lg:400px"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : 'auto'"
+        class="size-full object-cover"
+      />
+      <span v-else class="text-fg-35 grid size-full place-items-center">
+        <Icon name="lucide:image" class="size-6" />
+      </span>
+    </div>
 
-      <!-- Title -->
+    <div class="flex flex-1 flex-col gap-2.25 px-4.5 pt-4.25 pb-4.5">
+      <span v-if="category" class="text-primary font-mono text-[10.5px] font-medium tracking-wider">
+        {{ category }}
+      </span>
       <h3
-        class="text-foreground group-hover:text-muted-foreground mb-3 line-clamp-2 text-xl font-bold tracking-tight transition-colors"
+        class="font-display text-card-title line-clamp-2 font-bold tracking-[-0.02em] text-pretty"
       >
         {{ post.title }}
       </h3>
+      <p v-if="post.summary" class="text-fg-50 text-label line-clamp-3">{{ post.summary }}</p>
 
-      <!-- Summary -->
-      <p class="text-muted-foreground mb-5 line-clamp-2 text-sm leading-relaxed md:line-clamp-4">
-        {{ post.summary || '' }}
-      </p>
-
-      <!-- Footer Meta -->
-      <div class="text-muted-foreground mt-auto flex items-center text-sm">
-        <Icon name="lucide:calendar" class="mr-2 size-4" />
-        <time :datetime="post.publishedAt || ''">{{ formattedDate }}</time>
+      <div class="mt-auto flex items-center gap-2 pt-3">
+        <AuthorAvatar :src="post.author.avatar" :name="authorName" :size="22" />
+        <span class="text-fg-40 truncate font-mono text-[11px] font-medium">
+          {{ authorName }} · {{ formatPostDateYmd(post.publishedAt) }}
+        </span>
       </div>
     </div>
   </NuxtLink>

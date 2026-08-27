@@ -1,13 +1,14 @@
-export function homeQuery(blogSlug: string) {
+export function homeQuery(blogSlug: string, limit = 7) {
   return `homePosts: posts(
     sort: ["-published_at", "-updated_at"]
-    limit: 6
+    limit: ${limit}
     filter: {
       blog_id: { slug: { _eq: "${blogSlug}" } }
       status: { _eq: "published" }
     }
   ) {
     author_id {
+      id
       first_name
       last_name
       avatar { id }

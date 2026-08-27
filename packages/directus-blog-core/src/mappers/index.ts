@@ -1,9 +1,11 @@
+export { authorProfileMapper, authorsMapper } from './author.js';
 export { calculatePostCount, categoryInPostMapper, categoryMapper } from './category.js';
 export { createBlogMappers, type BlogMappers } from './create-mappers.js';
 export { homeMapper } from './home.js';
 export { navigationMapper } from './navigation.js';
 export { postDetailMapper, postMapper, postSearchMapper } from './post.js';
 export { rssMapper, sitemapMapper } from './seo.js';
+export { searchMapper } from './search.js';
 export { seriesInPostMapper, seriesMapper } from './series.js';
 export { sidebarMapper } from './sidebar.js';
 export { tagInPostMapper, tagMapper } from './tag.js';

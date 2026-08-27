@@ -1,38 +1,32 @@
 <script setup lang="ts">
-  interface Props {
-    id: string;
-  }
-
-  const { id } = defineProps<Props>();
+  const { id } = defineProps<{ id: string }>();
 
   const copied = ref(false);
 
-  async function copyLink(id?: string) {
+  async function copyLink() {
     if (!id) return;
-
-    const url = `${window.location.origin}${window.location.pathname}#${id}`;
-    await navigator.clipboard.writeText(url);
-
+    await navigator.clipboard.writeText(
+      `${window.location.origin}${window.location.pathname}#${id}`,
+    );
     copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 1500);
+    setTimeout(() => (copied.value = false), 1500);
   }
 </script>
 
 <template>
-  <h4 :id="id" class="group mt-8 mb-4 scroll-mt-24 font-bold">
-    <span class="inline items-center gap-2 text-lg sm:text-xl">
-      <slot />
-      <button
-        v-if="id"
-        type="button"
-        class="text-muted-foreground hover:text-foreground ms-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
-        :aria-label="copied ? '링크 복사됨' : '링크 복사'"
-        @click="copyLink(id)"
-      >
-        <Icon :name="copied ? 'lucide:check' : 'lucide:link'" class="size-4" />
-      </button>
-    </span>
+  <h4
+    :id="id"
+    class="font-display group text-foreground mt-7 mb-3 flex scroll-mt-24 items-center gap-2 text-[15.5px] font-bold tracking-[-0.02em]"
+  >
+    <span class="min-w-0"><slot /></span>
+    <button
+      v-if="id"
+      type="button"
+      class="text-fg-40 hover:text-foreground shrink-0 cursor-pointer transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+      :aria-label="copied ? '링크 복사됨' : '링크 복사'"
+      @click="copyLink()"
+    >
+      <Icon :name="copied ? 'lucide:check' : 'lucide:link'" class="size-3.5" />
+    </button>
   </h4>
 </template>

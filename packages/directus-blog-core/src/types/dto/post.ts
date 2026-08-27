@@ -23,6 +23,12 @@ export interface PostItem {
   series: string[] | null;
 }
 
+export interface PostLink {
+  postIdx: number;
+  title: string;
+  slug: string;
+}
+
 export interface PostDetail {
   postIdx: number;
   author: PostAuthor;
@@ -36,6 +42,9 @@ export interface PostDetail {
   categories: CategoryItemInPost[] | null;
   tags: TagItemInPost[] | null;
   series: SeriesItemInPost[] | null;
+  /** 시리즈와 무관한 블로그 전체 기준 이전/다음 글 */
+  prev: PostLink | null;
+  next: PostLink | null;
 }
 
 export interface PostsResponse {

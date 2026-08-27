@@ -28,14 +28,12 @@
     },
   );
 
-  const { posts, pending, error, metadata, totalCount } = usePostList(
-    limit,
-    currentPage,
-    () => options.value.search,
-    () => options.value.category,
-    () => options.value.tag,
-    () => options.value.series,
-  );
+  const { posts, pending, error, metadata, totalCount } = usePostList(limit, currentPage, {
+    search: () => options.value.search,
+    category: () => options.value.category,
+    tag: () => options.value.tag,
+    series: () => options.value.series,
+  });
 
   // API searchType보다 props로 타입을 정해 SSR/클라이언트 헤더가 어긋나지 않게 함
   const resolvedType = computed(() => {

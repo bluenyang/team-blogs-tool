@@ -60,12 +60,12 @@
 <template>
   <nav
     v-if="visible"
-    class="mt-12 flex items-center justify-center gap-1"
+    class="mt-3 flex items-center justify-center gap-1.75"
     aria-label="페이지네이션"
   >
     <button
       type="button"
-      class="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-9 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-40"
+      class="chip grid size-11 cursor-pointer place-items-center rounded-md text-[12.5px] disabled:pointer-events-none disabled:opacity-40 sm:size-8.5"
       :disabled="current <= 1"
       aria-label="이전 페이지"
       @click="goTo(current - 1)"
@@ -74,13 +74,7 @@
     </button>
 
     <template v-for="(page, index) in pages" :key="`${page}-${index}`">
-      <span
-        v-if="page === 'ellipsis'"
-        class="text-muted-foreground px-1 text-sm"
-        aria-hidden="true"
-      >
-        …
-      </span>
+      <span v-if="page === 'ellipsis'" class="text-fg-40 px-1 text-sm" aria-hidden="true">…</span>
       <button
         v-else
         type="button"
@@ -88,10 +82,8 @@
         :aria-current="page === current ? 'page' : undefined"
         :class="
           cn(
-            'inline-flex size-9 items-center justify-center rounded-md text-sm font-medium transition-colors',
-            page === current
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+            'chip grid size-11 cursor-pointer place-items-center rounded-md text-[12.5px] font-semibold sm:size-8.5',
+            page === current && 'chip-active',
           )
         "
         @click="goTo(page)"
@@ -102,7 +94,7 @@
 
     <button
       type="button"
-      class="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-9 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-40"
+      class="chip grid size-11 cursor-pointer place-items-center rounded-md text-[12.5px] disabled:pointer-events-none disabled:opacity-40 sm:size-8.5"
       :disabled="current >= totalPages"
       aria-label="다음 페이지"
       @click="goTo(current + 1)"

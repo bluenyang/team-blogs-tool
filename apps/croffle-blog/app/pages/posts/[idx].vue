@@ -1,52 +1,58 @@
 <script setup lang="ts">
   const route = useRoute();
-  const config = useRuntimeConfig();
-
-  const idxParam = route.params.idx as string;
-  const postIdx = parseInt(idxParam, 10);
-
+  const { siteName, blogUrl, description: blogDescription } = useBlogBrand();
   const { settings } = useSetting();
-  const { post, pending, error } = usePostDetail(postIdx);
+
+  const postIdx = Number.parseInt(String(route.params.idx), 10);
+
+  if (!Number.isInteger(postIdx)) {
+    throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true });
+  }
+
+  const { post, pending, error } = await usePostDetail(postIdx);
+
+  if (error.value) {
+    throw createError({
+      statusCode: error.value.statusCode === 404 ? 404 : 500,
+      statusMessage: error.value.statusCode === 404 ? 'Post not found' : 'Failed to load post',
+      fatal: true,
+    });
+  }
+
+  // 본문은 서버에서 파싱한다 — SSR HTML에 본문과 코드 하이라이팅이 그대로 실린다
+  const { tree, toc } = await usePostContent(
+    () => postIdx,
+    () => post.value?.content,
+  );
+  const { activeId } = useActiveHeading(toc);
+
   const series = computed(() => post.value?.series?.[0]);
-  const seriesName = computed(() => series.value?.name);
-
-  const seriesOrder = computed(() => {
-    if (!series.value || !post.value?.postIdx) return null;
-    const index = series.value.posts.findIndex((p) => p.postIdx === post.value?.postIdx);
-    return index >= 0 ? index + 1 : null;
-  });
-
-  const formattedDate = computed(() => formatPostDateLong(post.value?.publishedAt));
-
-  const categoryName = computed<string>(() => {
-    if (!post.value?.categories?.length) {
-      return 'Uncategorized';
-    }
-    return post.value.categories[0]?.name ?? 'Uncategorized';
-  });
-
+  const category = computed(() => post.value?.categories?.[0]);
+  const minutes = computed(() => readingMinutes(post.value?.content));
   const cclLicenseCode = computed(() => getCclLicenseCode(settings.value));
 
   const canonicalPath = computed(() =>
     post.value ? `/posts/${post.value.postIdx}-${post.value.slug}` : null,
   );
   const canonicalUrl = computed(() =>
-    canonicalPath.value ? `${config.public.blogUrl}${canonicalPath.value}` : undefined,
+    canonicalPath.value ? `${blogUrl.value}${canonicalPath.value}` : undefined,
   );
 
-  // /posts/12 와 /posts/12-wrong-slug 를 정규 URL로 합쳐 중복 콘텐츠를 막음
+  // /posts/12 와 /posts/12-wrong-slug 를 정규 URL로 합쳐 중복 콘텐츠를 막음.
+  // route.path는 상황에 따라 이중 인코딩되므로 경로 문자열 대신 디코딩한 라우트 param을 비교한다.
+  const currentIdxParam = computed(() => decodeRouteSlug(String(route.params.idx ?? '')));
+  const canonicalIdxParam = computed(() =>
+    post.value ? `${post.value.postIdx}-${post.value.slug}` : null,
+  );
+
   watch(
-    canonicalPath,
-    (path) => {
-      if (!path || route.path === path) return;
-      navigateTo(path, { redirectCode: 301, replace: true });
+    canonicalIdxParam,
+    (expected) => {
+      if (!expected || currentIdxParam.value === expected) return;
+      navigateTo(`/posts/${expected}`, { redirectCode: 301, replace: true });
     },
     { immediate: true },
   );
-
-  function goBack() {
-    window.history.back();
-  }
 
   useHead({
     link: () => (canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []),
@@ -54,170 +60,187 @@
 
   useSeoMeta({
     title: () => post.value?.title || 'Post',
-    description: () => post.value?.summary || undefined,
+    description: () => post.value?.summary || blogDescription.value,
     ogTitle: () => post.value?.title || 'Post',
-    ogImage: () => post.value?.thumbnail || undefined,
-    ogDescription: () => post.value?.summary || undefined,
+    ogImage: () => post.value?.thumbnail || `${blogUrl.value}/images/croffle-logo.png`,
+    ogDescription: () => post.value?.summary || blogDescription.value,
     ogUrl: canonicalUrl,
     ogType: 'article',
     ogLocale: 'ko_KR',
-    ogSiteName: () => useBlogBrand().siteName.value,
+    ogSiteName: siteName,
     twitterCard: 'summary_large_image',
     articlePublishedTime: () => post.value?.publishedAt,
     articleModifiedTime: () => post.value?.updatedAt,
+    articleSection: () => category.value?.name,
+    articleTag: () => post.value?.tags?.map((tag) => tag.name),
+  });
+
+  useJsonLd(() => {
+    if (!post.value || !canonicalUrl.value) return null;
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.value.title,
+        description: post.value.summary ?? undefined,
+        image: post.value.thumbnail ?? undefined,
+        datePublished: post.value.publishedAt,
+        dateModified: post.value.updatedAt,
+        mainEntityOfPage: canonicalUrl.value,
+        wordCount: post.value.content?.length,
+        keywords: post.value.tags?.map((tag) => tag.name).join(', '),
+        author: {
+          '@type': 'Person',
+          name: authorDisplayName(post.value.author),
+          url: post.value.author.nickname
+            ? `${blogUrl.value}/authors/${encodeURIComponent(post.value.author.nickname)}`
+            : undefined,
+        },
+        publisher: { '@type': 'Organization', name: siteName.value, url: blogUrl.value },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: '홈', item: blogUrl.value },
+          { '@type': 'ListItem', position: 2, name: '전체 글', item: `${blogUrl.value}/posts` },
+          { '@type': 'ListItem', position: 3, name: post.value.title, item: canonicalUrl.value },
+        ],
+      },
+    ];
   });
 </script>
 
 <template>
-  <div class="w-full px-4 py-32 sm:px-6 lg:px-8">
-    <div v-if="pending" class="flex justify-center py-24">
-      <Icon name="lucide:loader-2" class="text-primary size-10 animate-spin" />
+  <div class="mx-auto w-full max-w-7xl px-5 sm:px-10">
+    <ReadingProgress v-if="post" />
+
+    <div v-if="pending && !post" class="grid items-start gap-9 py-6 lg:grid-cols-[1fr_232px]">
+      <div class="flex max-w-160 animate-pulse flex-col gap-5">
+        <div class="skeleton h-4 w-40" />
+        <div class="skeleton h-10 w-full" />
+        <div class="skeleton h-10 w-3/4" />
+        <div class="skeleton h-16 w-full" />
+        <div class="skeleton h-57.5 w-full rounded-2xl" />
+        <div class="skeleton h-4 w-full" />
+        <div class="skeleton h-4 w-full" />
+        <div class="skeleton h-4 w-2/3" />
+      </div>
+      <div class="skeleton hidden h-64 rounded-2xl lg:block" />
     </div>
 
-    <div
-      v-else-if="error || !post"
-      class="flex flex-col items-center justify-center py-24 text-center"
+    <EmptyState
+      v-else-if="!post"
+      icon="lucide:alert-circle"
+      tone="error"
+      title="게시글을 찾을 수 없습니다."
     >
-      <Icon name="lucide:alert-circle" class="text-destructive mb-4 size-12" />
-      <p class="text-destructive text-lg">{{ '게시글을 찾을 수 없습니다.' }}</p>
-    </div>
+      <NuxtLink to="/posts" class="chip mt-2 rounded-full px-4 py-2.5 text-[12px]">
+        전체 글 보기
+      </NuxtLink>
+    </EmptyState>
 
-    <div v-else class="mx-auto max-w-7xl">
-      <button
-        class="text-muted-foreground hover:text-primary mb-4 inline-flex items-center gap-1 transition-colors hover:underline"
-        @click="goBack"
-      >
-        <Icon name="lucide:arrow-left" class="size-4" />
-        <span class="mt-0.5">
-          {{ '이전으로 돌아가기' }}
-        </span>
-      </button>
-      <!-- Hero Section -->
-      <div class="mb-8 flex flex-col items-start text-center">
-        <!-- Thumbnail -->
-        <div
-          v-if="post.thumbnail"
-          class="relative mb-8 w-full max-w-4xl overflow-hidden rounded-2xl bg-linear-to-br shadow-lg md:from-blue-200 md:to-purple-300 dark:md:from-blue-800 dark:md:to-purple-900"
-        >
-          <img :src="post.thumbnail" :alt="post.title" class="aspect-2/1 w-full object-cover" />
-        </div>
-
-        <div class="flex flex-col">
-          <div class="mb-4 flex flex-wrap items-center justify-start gap-2 text-sm">
-            <span class="text-muted-foreground font-bold">{{ categoryName }}</span>
-            <template v-if="series">
-              <div class="flex items-center gap-1">
-                <span class="text-muted-foreground">
-                  {{ '·' }}
-                </span>
-                <NuxtLink
-                  :to="{ name: 'series-slug', params: { slug: series.slug } }"
-                  class="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <Icon name="lucide:layers" class="mr-1 mb-0.5 inline size-4" />
-                  {{ `${seriesName} (${seriesOrder}편)` }}
-                </NuxtLink>
-              </div>
-            </template>
+    <div v-else class="grid items-start gap-9 pt-4 pb-11.5 lg:grid-cols-[1fr_232px]">
+      <article class="flex max-w-160 min-w-0 flex-col gap-5.5">
+        <header class="flex flex-col gap-4">
+          <div class="flex flex-wrap items-center gap-2.25">
+            <NuxtLink
+              v-if="category"
+              :to="{ name: 'categories-slug', params: { slug: category.slug } }"
+              class="text-primary-soft rounded-md bg-[oklch(0.785_0.104_69.8/0.2)] px-2.25 py-1 font-mono text-[10.5px] font-medium tracking-[0.06em] uppercase"
+            >
+              {{ category.name }}
+            </NuxtLink>
+            <span class="text-fg-40 font-mono text-[11px] font-medium">
+              <time :datetime="formatPostDateIso(post.publishedAt)">
+                {{ formatPostDateYmd(post.publishedAt) }}
+              </time>
+              <template v-if="minutes"> · {{ minutes }}분 읽기</template>
+            </span>
           </div>
 
-          <h1 class="mb-6 text-start text-3xl leading-tight font-bold sm:text-5xl">
+          <h1
+            class="font-display sm:text-article text-[25px] leading-[1.3] font-extrabold tracking-[-0.03em] text-pretty sm:tracking-[-0.035em]"
+          >
             {{ post.title }}
           </h1>
 
-          <div class="text-muted-foreground mb-6 flex items-center justify-start gap-2 text-sm">
-            <div class="flex items-center gap-2">
-              <img
-                v-if="post.author.avatar"
-                :src="post.author.avatar"
-                alt="Author Avatar"
-                class="size-6 rounded-full"
-              />
-              <div
-                v-else
-                class="bg-block-bg text-foreground flex size-6 items-center justify-center rounded-full"
-              >
-                <Icon name="lucide:user" class="size-4" />
-              </div>
-              <span class="font-medium">{{ post.author.nickname }}</span>
-            </div>
-            <span>{{ '·' }}</span>
-            <div class="flex items-center gap-2">
-              <Icon name="lucide:calendar-days" class="size-4" />
-              <time :datetime="post.publishedAt || ''">{{ formattedDate }}</time>
-            </div>
-            <template v-if="settings?.allowCCL">
-              <span>{{ '·' }}</span>
-              <NuxtLink to="/license" class="hover:text-foreground transition-colors">
-                <CclBadge />
-              </NuxtLink>
-            </template>
-          </div>
+          <p
+            v-if="post.summary"
+            class="text-fg-60 sm:text-lead text-[14px] leading-[1.75] text-pretty"
+          >
+            {{ post.summary }}
+          </p>
+
+          <AuthorByline :author="post.author" />
+        </header>
+
+        <div v-if="post.thumbnail" class="glass overflow-hidden rounded-2xl">
+          <NuxtImg
+            :src="post.thumbnail"
+            :alt="post.title"
+            width="1280"
+            height="640"
+            sizes="sm:100vw lg:640px"
+            loading="eager"
+            fetchpriority="high"
+            preload
+            class="h-42.5 w-full object-cover sm:h-57.5"
+          />
         </div>
 
-        <div
-          v-if="post.tags && post.tags.length > 0"
-          class="flex flex-wrap items-center justify-center gap-2"
-        >
+        <!-- 모바일 목차 -->
+        <details v-if="toc.length" class="glass rounded-2xl p-4 lg:hidden">
+          <summary
+            class="flex cursor-pointer items-center justify-between text-[13px] font-semibold"
+          >
+            목차
+            <Icon name="lucide:chevron-down" class="size-4" />
+          </summary>
+          <div class="mt-3.5">
+            <TocLink :links="toc" :active-id="activeId" />
+          </div>
+        </details>
+
+        <MarkdownContent :tree="tree ?? null" />
+
+        <div v-if="post.tags?.length" class="flex flex-wrap gap-1.75 pt-1.5">
           <NuxtLink
             v-for="tag in post.tags"
             :key="tag.slug"
             :to="{ name: 'tags-slug', params: { slug: tag.slug } }"
-            class="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium"
+            class="chip rounded-lg px-2.75 py-1.5 text-[11.5px]"
           >
-            {{ `# ${tag.name}` }}
+            #{{ tag.name }}
           </NuxtLink>
         </div>
-      </div>
 
-      <MarkdownContent
-        v-if="post"
-        :post-content="post.content"
-        :post-idx="post.postIdx"
-        :series="series"
-        :current-post-idx="post.postIdx"
-      />
+        <SeriesBox v-if="series" :series="series" :current-post-idx="post.postIdx" />
 
-      <footer class="border-border mt-12 max-w-7xl border-t pt-8">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div class="flex items-center gap-3">
-            <img
-              v-if="post.author.avatar"
-              :src="post.author.avatar"
-              alt="Author Avatar"
-              class="size-12 rounded-full"
-            />
-            <div
-              v-else
-              class="bg-block-bg text-foreground flex size-12 items-center justify-center rounded-full"
-            >
-              <Icon name="lucide:user" class="size-6" />
-            </div>
-            <div class="flex flex-col gap-0.5">
-              <span class="text-muted-foreground text-xs tracking-wide uppercase">
-                {{ '작성자' }}
-              </span>
-              <span class="text-foreground text-base font-semibold">
-                {{ post.author.nickname }}
-              </span>
-            </div>
-          </div>
+        <PostNav :prev="post.prev" :next="post.next" />
+      </article>
 
-          <div v-if="settings?.allowCCL" class="flex flex-col gap-2 sm:items-end">
-            <span class="text-muted-foreground text-xs tracking-wide uppercase">
-              {{ '라이선스' }}
-            </span>
-            <NuxtLink
-              to="/license"
-              class="text-muted-foreground hover:text-primary inline-flex flex-wrap items-center gap-2 transition-colors sm:justify-end"
-            >
-              <CclBadge />
-              <span class="text-sm">{{ cclLicenseCode }}</span>
-              <Icon name="lucide:arrow-up-right" class="size-3.5" />
-            </NuxtLink>
-          </div>
+      <aside class="sticky top-21 hidden flex-col gap-3.5 lg:flex">
+        <nav
+          v-if="toc.length"
+          class="glass flex flex-col gap-3 rounded-2xl p-4.5"
+          aria-label="목차"
+        >
+          <span class="mono-label">ON THIS PAGE</span>
+          <TocLink :links="toc" :active-id="activeId" />
+        </nav>
+
+        <div v-if="settings?.allowCCL" class="glass flex flex-col gap-2.5 rounded-2xl px-4.5 py-4">
+          <span class="mono-label">LICENSE</span>
+          <CclBadge />
+          <NuxtLink
+            to="/license"
+            class="text-fg-50 hover:text-foreground text-[12px] leading-[1.6] transition-colors"
+          >
+            {{ cclLicenseCode }} · 출처를 남기면 자유롭게 인용할 수 있습니다.
+          </NuxtLink>
         </div>
-      </footer>
+      </aside>
     </div>
   </div>
 </template>

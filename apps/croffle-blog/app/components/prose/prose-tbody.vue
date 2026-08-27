@@ -1,5 +1,5 @@
 <template>
-  <tbody class="divide-y">
+  <tbody>
     <slot />
   </tbody>
 </template>

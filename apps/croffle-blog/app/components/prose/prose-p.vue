@@ -1,5 +1,5 @@
 <template>
-  <p class="my-2 leading-relaxed">
+  <p class="my-4 text-pretty">
     <slot />
   </p>
 </template>

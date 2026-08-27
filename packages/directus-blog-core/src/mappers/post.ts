@@ -4,10 +4,11 @@ import type {
   RawCategoryItem,
   RawPostDetail,
   RawPostItem,
+  RawPostLink,
   RawSeriesItem,
   RawTagItem,
 } from '../types/raw/index.js';
-import type { PostDetail, PostItem, PostSearch } from '../types/dto/post.js';
+import type { PostDetail, PostItem, PostLink, PostSearch } from '../types/dto/post.js';
 
 import { categoryInPostMapper } from './category.js';
 import { seriesInPostMapper } from './series.js';
@@ -45,6 +46,12 @@ export function postMapper(raw: RawPostItem[], resolveAssetUrl: AssetUrlResolver
   }));
 }
 
+function postLinkMapper(raw: RawPostLink[] | null | undefined): PostLink | null {
+  const link = raw?.[0];
+  if (!link) return null;
+  return { postIdx: link.post_idx, title: link.title, slug: link.slug };
+}
+
 export function postDetailMapper(
   raw: RawPostDetail,
   resolveAssetUrl: AssetUrlResolver,
@@ -75,6 +82,8 @@ export function postDetailMapper(
     categories: post.categories ? categoryInPostMapper(post.categories) : null,
     tags: post.tags ? tagInPostMapper(post.tags) : null,
     series: post.series ? seriesInPostMapper(post.series) : null,
+    prev: postLinkMapper(raw.prevPost),
+    next: postLinkMapper(raw.nextPost),
   };
 }
 

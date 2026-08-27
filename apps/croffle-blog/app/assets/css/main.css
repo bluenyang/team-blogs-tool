@@ -1,12 +1,14 @@
 @import './tailwind.css';
 @import './theme.css';
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+/* 페이지 배경 웜 글로우 2겹 — 스크롤과 무관하게 고정 */
+.page-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(900px 520px at 18% -12%, var(--glow-1), transparent 70%),
+    radial-gradient(760px 420px at 92% 6%, var(--glow-2), transparent 72%);
 }

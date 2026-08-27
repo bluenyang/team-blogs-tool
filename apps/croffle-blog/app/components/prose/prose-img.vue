@@ -25,13 +25,10 @@
   <figure class="my-8 flex flex-col items-center justify-center">
     <!-- 이미지 래퍼: 이미지가 로드되기 전의 배경색과 테두리 정의 -->
     <div
-      class="bg-muted border-border relative flex justify-center overflow-hidden rounded-sm border shadow-sm transition-all duration-300"
+      class="glass relative flex justify-center overflow-hidden rounded-lg transition-all duration-300"
     >
       <!-- 이미지 로딩 실패 시 폴백(Fallback) UI -->
-      <div
-        v-if="hasError"
-        class="text-muted-foreground flex flex-col items-center justify-center p-12"
-      >
+      <div v-if="hasError" class="text-fg-40 flex flex-col items-center justify-center p-12">
         <Icon name="lucide:image-off" class="mb-2 size-8 opacity-50" />
         <span class="text-sm">이미지를 불러올 수 없습니다</span>
       </div>
@@ -56,7 +53,7 @@
     </div>
 
     <!-- 이미지 캡션 (alt 속성을 캡션으로 활용) -->
-    <figcaption v-if="alt && !hasError" class="text-muted-foreground mt-3 text-center text-sm">
+    <figcaption v-if="alt && !hasError" class="text-fg-40 mt-3 text-center text-[12px]">
       {{ alt }}
     </figcaption>
   </figure>

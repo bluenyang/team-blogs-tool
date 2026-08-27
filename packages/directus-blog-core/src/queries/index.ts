@@ -1,3 +1,4 @@
+export * from './author.js';
 export * from './category.js';
 export * from './home.js';
 export * from './post.js';

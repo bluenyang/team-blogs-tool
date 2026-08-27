@@ -1,124 +1,122 @@
 <script setup lang="ts">
-  import type { PostItem } from '@croffledev/directus-blog-core';
-
-  const config = useRuntimeConfig();
-  const { siteName, description } = useBlogBrand();
+  const route = useRoute();
+  const router = useRouter();
+  const { siteName, description, blogUrl } = useBlogBrand();
+  const { sidebar } = useSidebar();
 
   const limit = 10;
-  const currentPage = ref(1);
-  const { posts, pending, error, totalCount } = usePostList(limit, currentPage);
-  const { onNavigate, isPending } = useNavFeedback();
 
-  function getFormattedDate(dateString: string | null) {
-    return formatPostDateYmd(dateString);
-  }
-
-  function getCategory(post: PostItem) {
-    if (!post.categories || post.categories.length === 0) {
-      return 'Uncategorized';
-    }
-    return post.categories[0] || 'Uncategorized';
-  }
-
-  const currentPageText = computed(() => {
-    return `총 ${Math.ceil(totalCount.value / limit)}페이지 중 ${currentPage.value}페이지`;
+  // 페이지 번호를 URL에 두어 뒤로가기·공유·크롤링이 모두 동작하게 한다
+  const currentPage = computed({
+    get: () => Math.max(Number(route.query.page) || 1, 1),
+    set: (page: number) => {
+      router.push({ query: { ...route.query, page: page > 1 ? String(page) : undefined } });
+    },
   });
 
-  const canonicalUrl = `${config.public.blogUrl}/posts`;
+  const { posts, pending, error, totalCount } = usePostList(limit, currentPage);
+
+  const topCategories = computed(() => sidebar.value?.categories.items.slice(0, 5) ?? []);
+  const totalPosts = computed(() => sidebar.value?.profile.totalPosts ?? totalCount.value);
+  const totalPages = computed(() => Math.max(Math.ceil(totalCount.value / limit), 1));
+
+  const canonicalUrl = computed(() => `${blogUrl.value}/posts`);
+
+  const prevHref = computed(() => {
+    if (currentPage.value <= 1) return null;
+    return currentPage.value === 2
+      ? canonicalUrl.value
+      : `${canonicalUrl.value}?page=${currentPage.value - 1}`;
+  });
+  const nextHref = computed(() =>
+    currentPage.value < totalPages.value
+      ? `${canonicalUrl.value}?page=${currentPage.value + 1}`
+      : null,
+  );
 
   useHead({
-    link: [{ rel: 'canonical', href: canonicalUrl }],
+    // 페이지네이션은 rel=prev/next로 이어 붙이고, 2페이지 이후 canonical은 자기 자신을 가리킨다
+    link: () => [
+      {
+        rel: 'canonical' as const,
+        href:
+          currentPage.value > 1
+            ? `${canonicalUrl.value}?page=${currentPage.value}`
+            : canonicalUrl.value,
+      },
+      ...(prevHref.value ? [{ rel: 'prev' as const, href: prevHref.value }] : []),
+      ...(nextHref.value ? [{ rel: 'next' as const, href: nextHref.value }] : []),
+    ],
   });
 
   useSeoMeta({
-    title: 'All Posts',
+    title: () => (currentPage.value > 1 ? `전체 글 (${currentPage.value}페이지)` : '전체 글'),
     description,
-    ogTitle: 'All Posts',
-    ogImage: `${config.public.blogUrl}/favicon.ico`,
+    ogTitle: '전체 글',
     ogDescription: description,
     ogUrl: canonicalUrl,
     ogType: 'website',
     ogLocale: 'ko_KR',
     ogSiteName: siteName,
+    // 2페이지 이후는 thin/duplicate라 색인하지 않고 링크만 따라가게 한다
+    robots: () => (currentPage.value > 1 ? 'noindex, follow' : undefined),
   });
 </script>
 
 <template>
-  <main class="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-    <div class="border-border border-b-2 pb-2">
-      <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{{ '전체 글' }}</h1>
-      <p class="text-muted-foreground mt-3 text-lg">
-        {{ '지금까지 작성된 모든 글을 확인해 보세요.' }}
-      </p>
-      <p class="text-muted-foreground mt-4 text-end text-base">{{ currentPageText }}</p>
+  <div
+    class="mx-auto grid w-full max-w-7xl items-start gap-7 px-5 pt-2 pb-11.5 sm:px-10 lg:grid-cols-[284px_1fr]"
+  >
+    <div class="sticky top-21 hidden lg:block">
+      <BlogSidebar />
     </div>
 
-    <!-- 로딩 상태 -->
-    <div v-if="pending" class="flex justify-center py-24">
-      <Icon name="lucide:loader-2" class="text-primary size-10 animate-spin" />
-    </div>
+    <div class="flex min-w-0 flex-col gap-3.5">
+      <header class="mb-2.5 flex flex-col gap-1.75">
+        <h1 class="font-display text-[28px] font-extrabold tracking-[-0.03em]">전체 글</h1>
+        <p class="text-fg-50 text-[13px]">
+          {{ totalPosts }}편 · 카테고리와 태그로 좁혀 볼 수 있습니다.
+        </p>
+      </header>
 
-    <!-- 에러 상태 -->
-    <div v-else-if="error" class="flex flex-col items-center justify-center py-24 text-center">
-      <Icon name="lucide:alert-circle" class="text-destructive mb-4 size-12" />
-      <p class="text-destructive text-lg">{{ '게시글을 불러오는데 실패했습니다.' }}</p>
-      <p class="text-muted-foreground text-sm">{{ error.message }}</p>
-    </div>
-
-    <!-- 빈 목록 상태 -->
-    <div
-      v-else-if="posts.length === 0"
-      class="flex flex-col items-center justify-center py-24 text-center"
-    >
-      <Icon name="lucide:file-text" class="text-muted-foreground mb-4 size-12" />
-      <p class="text-muted-foreground text-lg">{{ '등록된 게시글이 없습니다.' }}</p>
-    </div>
-
-    <!-- 리스트 형태 게시글 -->
-    <template v-else>
-      <div class="divide-border flex flex-col divide-y">
+      <!-- 카테고리 필터 칩 -->
+      <div class="-mx-5 mb-1 flex gap-2.25 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         <NuxtLink
-          v-for="post in posts"
-          :key="post.slug"
-          :to="`/posts/${post.postIdx}-${post.slug}`"
-          :aria-busy="isPending(`post-${post.slug}`)"
-          :class="
-            cn(
-              'group hover:bg-card relative flex flex-col transition-opacity sm:flex-row sm:justify-between',
-              isPending(`post-${post.slug}`) && 'pointer-events-none opacity-60',
-            )
-          "
-          @click="onNavigate(`post-${post.slug}`)"
+          to="/posts"
+          class="chip chip-active shrink-0 rounded-full px-3.5 py-2 text-[12px]"
         >
-          <div
-            class="flex-1 p-4 transition-all before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l-md before:bg-linear-to-b before:from-sky-500 before:to-indigo-500 before:opacity-0 before:transition-opacity before:duration-200 group-hover:before:opacity-100 sm:py-8"
-          >
-            <div
-              class="text-muted-foreground mb-2 flex flex-col-reverse items-start text-sm sm:flex-row sm:items-center"
-            >
-              <span class="text-primary font-semibold">{{ getCategory(post) }}</span>
-              <span class="ms-2 hidden sm:inline">{{ '·' }}</span>
-              <span class="ms-2 text-xs">{{ `No. ${post.postIdx}` }}</span>
-            </div>
-            <h3
-              class="text-foreground group-hover:text-muted-foreground mb-2 text-xl font-bold tracking-tight transition-colors"
-            >
-              {{ post.title }}
-            </h3>
-            <p class="text-muted-foreground line-clamp-1 text-sm md:line-clamp-2">
-              {{ post.summary || '' }}
-            </p>
-          </div>
-          <div class="text-muted-foreground flex items-center gap-1 p-4">
-            <Icon name="lucide:clock" class="text-muted-foreground mb-0.5 size-4" />
-            <time :datetime="post.publishedAt || ''" class="text-sm">
-              {{ getFormattedDate(post.publishedAt) }}
-            </time>
-          </div>
+          전체 {{ totalPosts }}
+        </NuxtLink>
+        <NuxtLink
+          v-for="category in topCategories"
+          :key="category.slug"
+          :to="{ name: 'categories-slug', params: { slug: category.slug } }"
+          class="chip shrink-0 rounded-full px-3.5 py-2 text-[12px]"
+        >
+          {{ category.name }} {{ category.postCount ?? 0 }}
         </NuxtLink>
       </div>
 
-      <Pagination v-model:current="currentPage" :total="totalCount" :limit="limit" />
-    </template>
-  </main>
+      <PostSkeleton v-if="pending && !posts.length" variant="row" :count="4" />
+
+      <EmptyState
+        v-else-if="error"
+        icon="lucide:alert-circle"
+        tone="error"
+        title="게시글을 불러오지 못했습니다."
+        :description="error.message"
+      />
+
+      <EmptyState
+        v-else-if="!posts.length"
+        icon="lucide:file-text"
+        title="등록된 게시글이 없습니다."
+      />
+
+      <template v-else>
+        <PostRow v-for="post in posts" :key="post.postIdx" :post="post" />
+        <Pagination v-model:current="currentPage" :total="totalCount" :limit="limit" />
+      </template>
+    </div>
+  </div>
 </template>

@@ -1,17 +1,19 @@
-<script setup lang="ts">
-  const route = useRoute();
-</script>
-
 <template>
-  <div class="flex flex-row">
-    <Siderbar />
+  <div class="relative flex min-h-screen flex-col">
+    <div class="page-glow" aria-hidden="true" />
 
-    <div class="relative flex min-w-0 grow flex-col">
-      <Header />
-      <div :class="cn('flex-1', route.path !== '/' && 'pt-12')">
-        <slot />
-      </div>
-      <Footer />
-    </div>
+    <SiteHeader />
+
+    <!-- 독 헤더(56px + 여백)와 모바일 하단 탭바를 피하는 여백 -->
+    <main class="flex-1 pt-[76px] pb-6 sm:pt-[84px]">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <div class="h-16 sm:hidden" aria-hidden="true" />
+    <MobileTabBar />
+    <NavDrawer />
+    <SearchPalette />
   </div>
 </template>

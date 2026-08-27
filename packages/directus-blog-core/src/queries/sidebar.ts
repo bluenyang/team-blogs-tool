@@ -1,4 +1,4 @@
-export function sidebarQuery(blogSlug: string) {
+export function sidebarQuery(blogSlug: string, tagLimit = 200) {
   return `sidebarPostCount: posts_aggregated(
     filter: {
       blog_id: { slug: { _eq: "${blogSlug}" } }
@@ -36,7 +36,7 @@ export function sidebarQuery(blogSlug: string) {
     filter: {
       blog_id: { slug: { _eq: "${blogSlug}" } }
     }
-    limit: 20
+    limit: ${tagLimit}
     sort: ["created_at", "slug"]
   ) {
     id

@@ -6,137 +6,89 @@
     series?: string;
   }>();
 
-  const config = useRuntimeConfig();
+  const route = useRoute();
+  const router = useRouter();
+  const { siteName, blogUrl } = useBlogBrand();
 
   const limit = 10;
-  const currentPage = ref(1);
-  const { onNavigate, isPending } = useNavFeedback();
 
-  const options = computed(() => {
-    return {
-      search: props.search,
-      category: props.category,
-      tag: props.tag,
-      series: props.series,
-    };
+  const currentPage = computed({
+    get: () => Math.max(Number(route.query.page) || 1, 1),
+    set: (page: number) => {
+      router.push({ query: { ...route.query, page: page > 1 ? String(page) : undefined } });
+    },
   });
 
   watch(
     () => [props.search, props.category, props.tag, props.series],
     () => {
-      currentPage.value = 1;
+      if (currentPage.value !== 1) currentPage.value = 1;
     },
   );
 
-  const { posts, pending, error, metadata, totalCount } = usePostList(
-    limit,
-    currentPage,
-    () => options.value.search,
-    () => options.value.category,
-    () => options.value.tag,
-    () => options.value.series,
-  );
+  const { posts, pending, error, metadata, totalCount } = usePostList(limit, currentPage, {
+    search: () => props.search,
+    category: () => props.category,
+    tag: () => props.tag,
+    series: () => props.series,
+  });
 
   // API searchType보다 props로 타입을 정해 SSR/클라이언트 헤더가 어긋나지 않게 함
   const resolvedType = computed(() => {
-    if (options.value.search) {
-      return 'search';
-    } else if (options.value.category && !options.value.series && !options.value.tag) {
-      return 'category';
-    } else if (options.value.tag && !options.value.series && !options.value.category) {
-      return 'tag';
-    } else if (options.value.series && !options.value.category && !options.value.tag) {
-      return 'series';
-    } else if (
-      !options.value.search &&
-      !options.value.category &&
-      !options.value.tag &&
-      !options.value.series
-    ) {
-      return null;
-    } else {
-      return 'search';
-    }
+    if (props.search) return 'search';
+    if (props.category && !props.series && !props.tag) return 'category';
+    if (props.tag && !props.series && !props.category) return 'tag';
+    if (props.series && !props.category && !props.tag) return 'series';
+    if (!props.search && !props.category && !props.tag && !props.series) return null;
+    return 'search';
   });
 
-  const eyebrow = computed(() => {
-    if (resolvedType.value === 'series') {
-      return 'Series';
-    }
-    if (resolvedType.value === 'category') {
-      return 'Category';
-    }
-    if (resolvedType.value === 'tag') {
-      return 'Tag';
-    }
-    return 'Search';
-  });
+  const eyebrow = computed(
+    () =>
+      ({ series: 'SERIES', category: 'CATEGORY', tag: 'TAG', search: 'SEARCH' })[
+        resolvedType.value ?? 'search'
+      ],
+  );
 
-  const iconName = computed(() => {
-    if (resolvedType.value === 'series') {
-      return 'lucide:layers';
-    }
-    if (resolvedType.value === 'category') {
-      return 'lucide:folder';
-    }
-    if (resolvedType.value === 'tag') {
-      return 'lucide:tag';
-    }
-    return 'lucide:search';
-  });
+  const iconName = computed(
+    () =>
+      ({
+        series: 'lucide:layers',
+        category: 'lucide:folder',
+        tag: 'lucide:tag',
+        search: 'lucide:search',
+      })[resolvedType.value ?? 'search'],
+  );
 
   const pageTitle = computed(() => {
-    if (resolvedType.value === 'series') {
-      return metadata.value?.name ? `${metadata.value.name} 시리즈` : '시리즈';
-    }
-    if (resolvedType.value === 'category') {
-      return metadata.value?.name ? `카테고리 · ${metadata.value.name}` : '카테고리';
-    }
-    if (resolvedType.value === 'tag') {
-      return metadata.value?.name ? `태그 · #${metadata.value.name}` : '태그';
-    }
-    return options.value.search ? `"${options.value.search}" 검색 결과` : '검색 결과';
+    const name = metadata.value?.name;
+    if (resolvedType.value === 'series') return name ? `${name}` : '시리즈';
+    if (resolvedType.value === 'category') return name ?? '카테고리';
+    if (resolvedType.value === 'tag') return name ? `#${name}` : '태그';
+    return props.search ? `"${props.search}" 검색 결과` : '검색';
   });
 
   const pageDesc = computed(() => {
-    const count = metadata.value?.totalCount;
+    const count = metadata.value?.totalCount ?? totalCount.value;
     if (resolvedType.value === 'series') {
-      return count != null ? `시리즈에 포함된 ${count}개의 글` : '';
+      return metadata.value?.description || `이 시리즈의 글 ${count}편`;
     }
-    if (resolvedType.value === 'category') {
-      return count != null ? `카테고리에 포함된 ${count}개의 글` : '';
-    }
-    if (resolvedType.value === 'tag') {
-      return count != null ? `태그가 붙은 ${count}개의 글` : '';
-    }
-    if (!options.value.search) {
-      return '검색어를 입력해 주세요.';
-    }
-    return count != null ? `총 ${count}개의 글이 검색됐습니다.` : '';
+    if (resolvedType.value === 'category') return `이 카테고리의 글 ${count}편`;
+    if (resolvedType.value === 'tag') return `이 태그가 붙은 글 ${count}편`;
+    if (!props.search) return '검색어를 입력해 주세요.';
+    return `${count}편이 검색됐습니다.`;
   });
 
-  const pageCanonicalUrl = computed(() => {
-    if (resolvedType.value === 'search') {
-      const q = options.value.search ? `?search=${encodeURIComponent(options.value.search)}` : '';
-      return `${config.public.blogUrl}/search${q}`;
-    }
-    if (resolvedType.value === 'category') {
-      return `${config.public.blogUrl}/categories/${props.category}`;
-    }
-    if (resolvedType.value === 'tag') {
-      return `${config.public.blogUrl}/tags/${props.tag}`;
-    }
-    if (resolvedType.value === 'series') {
-      return `${config.public.blogUrl}/series/${props.series}`;
-    }
-    return `${config.public.blogUrl}`;
+  const canonicalUrl = computed(() => {
+    if (resolvedType.value === 'category') return `${blogUrl.value}/categories/${props.category}`;
+    if (resolvedType.value === 'tag') return `${blogUrl.value}/tags/${props.tag}`;
+    if (resolvedType.value === 'series') return `${blogUrl.value}/series/${props.series}`;
+    return `${blogUrl.value}/search`;
   });
 
   useHead({
     link: () =>
-      resolvedType.value !== 'search' && pageCanonicalUrl.value
-        ? [{ rel: 'canonical', href: pageCanonicalUrl.value }]
-        : [],
+      resolvedType.value !== 'search' ? [{ rel: 'canonical', href: canonicalUrl.value }] : [],
   });
 
   useSeoMeta({
@@ -144,144 +96,83 @@
     description: pageDesc,
     ogTitle: pageTitle,
     ogDescription: pageDesc,
-    ogUrl: pageCanonicalUrl,
+    ogUrl: canonicalUrl,
     ogImage: () =>
       resolvedType.value === 'series'
         ? metadata.value?.thumbnail
-        : `${config.public.blogUrl}/favicon.ico`,
+        : `${blogUrl.value}/images/croffle-logo.png`,
     ogType: 'website',
     ogLocale: 'ko_KR',
-    ogSiteName: () => useBlogBrand().siteName.value,
-    // 검색 결과 페이지는 색인하지 않아 thin/duplicate를 피함
-    robots: () => (resolvedType.value === 'search' ? 'noindex, follow' : undefined),
-  });
-
-  function getFormattedDate(dateString: string | null) {
-    return formatPostDateYmd(dateString);
-  }
-
-  function getCategory(post: PostItem) {
-    if (!post.categories || post.categories.length === 0) {
-      return 'Uncategorized';
-    }
-    return post.categories[0] ?? 'Uncategorized';
-  }
-
-  const currentPageText = computed(() => {
-    return `총 ${Math.ceil(totalCount.value / limit)}페이지 중 ${currentPage.value}페이지`;
+    ogSiteName: siteName,
+    // 검색 결과와 2페이지 이후는 색인하지 않아 thin/duplicate를 피함
+    robots: () =>
+      resolvedType.value === 'search' || currentPage.value > 1 ? 'noindex, follow' : undefined,
   });
 </script>
 
 <template>
-  <main class="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-    <div
-      v-if="resolvedType === 'series' && metadata?.thumbnail"
-      class="mb-8 w-full overflow-hidden rounded-2xl shadow-md"
-    >
-      <img
-        :src="metadata?.thumbnail"
-        :alt="metadata?.name ?? ''"
-        class="aspect-3/1 w-full object-cover"
-      />
+  <div
+    class="mx-auto grid w-full max-w-7xl items-start gap-7 px-5 pt-2 pb-11.5 sm:px-10 lg:grid-cols-[284px_1fr]"
+  >
+    <div class="sticky top-21 hidden lg:block">
+      <BlogSidebar />
     </div>
 
-    <div class="border-border border-b-2 pb-2">
-      <div class="text-muted-foreground mb-3 flex items-center gap-2 text-sm">
-        <Icon :name="iconName" class="size-4" />
-        <span class="tracking-widest uppercase">{{ eyebrow }}</span>
+    <div class="flex min-w-0 flex-col gap-3.5">
+      <div
+        v-if="resolvedType === 'series' && metadata?.thumbnail"
+        class="glass overflow-hidden rounded-xl"
+      >
+        <NuxtImg
+          :src="metadata.thumbnail"
+          :alt="metadata.name ?? ''"
+          width="1200"
+          height="400"
+          sizes="sm:100vw lg:960px"
+          class="aspect-3/1 w-full object-cover"
+        />
       </div>
-      <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{{ pageTitle }}</h1>
-      <p class="text-muted-foreground mt-3 text-lg">
-        {{ resolvedType === 'series' ? metadata?.description : pageDesc }}
-      </p>
-      <p class="text-muted-foreground mt-3 text-end text-base">{{ currentPageText }}</p>
-    </div>
 
-    <div v-if="pending" class="flex justify-center py-24">
-      <Icon name="lucide:loader-2" class="text-primary size-10 animate-spin" />
-    </div>
+      <header class="mb-2.5 flex flex-col gap-2">
+        <span
+          class="text-fg-40 flex items-center gap-2 font-mono text-[11px] font-semibold tracking-widest"
+        >
+          <Icon :name="iconName" class="size-3.5" />
+          {{ eyebrow }}
+        </span>
+        <h1 class="font-display text-[28px] font-extrabold tracking-[-0.03em]">{{ pageTitle }}</h1>
+        <p class="text-fg-50 text-[13px] leading-[1.7]">{{ pageDesc }}</p>
+      </header>
 
-    <div v-else-if="error" class="flex flex-col items-center justify-center py-24 text-center">
-      <Icon name="lucide:alert-circle" class="text-destructive mb-4 size-12" />
-      <p class="text-destructive text-lg">게시글을 불러오는데 실패했습니다.</p>
-      <p class="text-muted-foreground text-sm">{{ error.message }}</p>
-    </div>
+      <PostSkeleton v-if="pending && !posts.length" variant="row" :count="4" />
 
-    <div
-      v-else-if="posts.length === 0"
-      class="flex flex-col items-center justify-center py-24 text-center"
-    >
-      <Icon name="lucide:search-x" class="text-muted-foreground mb-4 size-12" />
-      <p class="text-muted-foreground text-lg">
-        {{ resolvedType === 'search' ? '검색 결과가 없습니다.' : '등록된 게시글이 없습니다.' }}
-      </p>
-    </div>
+      <EmptyState
+        v-else-if="error"
+        icon="lucide:alert-circle"
+        tone="error"
+        title="게시글을 불러오지 못했습니다."
+        :description="error.message"
+      />
 
-    <template v-else>
-      <div class="divide-border flex flex-col divide-y">
-        <NuxtLink
+      <EmptyState
+        v-else-if="!posts.length"
+        :icon="resolvedType === 'search' ? 'lucide:search-x' : 'lucide:file-text'"
+        :title="resolvedType === 'search' ? '검색 결과가 없습니다.' : '등록된 게시글이 없습니다.'"
+      />
+
+      <template v-else>
+        <PostRow
           v-for="post in posts"
           :key="post.postIdx"
-          :to="`/posts/${post.postIdx}-${post.slug}`"
-          :aria-busy="isPending(`post-${post.postIdx}`)"
-          :class="
-            cn(
-              'group hover:bg-card relative flex flex-col transition-opacity sm:flex-row sm:justify-between',
-              isPending(`post-${post.postIdx}`) && 'pointer-events-none opacity-60',
-            )
-          "
-          @click="onNavigate(`post-${post.postIdx}`)"
-        >
-          <div
-            class="flex-1 p-4 transition-all before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l-md before:bg-linear-to-b before:from-sky-500 before:to-indigo-500 before:opacity-0 before:transition-opacity before:duration-200 group-hover:before:opacity-100 sm:py-8"
-          >
-            <div
-              class="text-muted-foreground mb-2 flex flex-col-reverse items-start text-sm sm:flex-row sm:items-center"
-            >
-              <span class="text-primary font-semibold">{{ getCategory(post) }}</span>
-              <span class="ms-2 hidden sm:inline">·</span>
-              <span class="ms-2 text-xs">{{ `No. ${post.postIdx}` }}</span>
-              <template v-if="resolvedType !== 'series' && post.series && post.series.length > 0">
-                <span class="ms-2 hidden sm:inline">·</span>
-                <span class="text-muted-foreground ms-2 flex items-center gap-1 text-xs">
-                  <Icon name="lucide:layers" class="size-3" />
-                  {{ post.series[0] }}
-                </span>
-              </template>
-            </div>
-            <h3
-              class="text-foreground group-hover:text-muted-foreground mb-2 text-xl font-bold tracking-tight transition-colors"
-            >
-              {{ post.title }}
-            </h3>
-            <p class="text-muted-foreground line-clamp-1 text-sm md:line-clamp-2">
-              {{ post.summary || '' }}
-            </p>
-            <div v-if="post.tags && post.tags.length > 0" class="mt-3 flex flex-wrap gap-1">
-              <span
-                v-for="tagName in post.tags"
-                :key="tagName"
-                class="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs"
-              >
-                {{ `#${tagName}` }}
-              </span>
-            </div>
-          </div>
-
-          <div class="text-muted-foreground flex items-center gap-1 p-4 sm:shrink-0">
-            <Icon name="lucide:clock" class="text-muted-foreground mb-0.5 size-4" />
-            <time :datetime="post.publishedAt || ''" class="text-sm">
-              {{ getFormattedDate(post.publishedAt) }}
-            </time>
-          </div>
-        </NuxtLink>
-      </div>
-
-      <Pagination
-        v-model:current="currentPage"
-        :total="metadata?.totalCount ?? totalCount"
-        :limit="limit"
-      />
-    </template>
-  </main>
+          :post="post"
+          :show-series="resolvedType !== 'series'"
+        />
+        <Pagination
+          v-model:current="currentPage"
+          :total="metadata?.totalCount ?? totalCount"
+          :limit="limit"
+        />
+      </template>
+    </div>
+  </div>
 </template>

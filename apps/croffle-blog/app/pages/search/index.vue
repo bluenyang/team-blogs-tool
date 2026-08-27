@@ -33,7 +33,5 @@
 </script>
 
 <template>
-  <div>
-    <FilteredPostsView :search="searchValue" />
-  </div>
+  <FilteredPostsView :search="searchValue" />
 </template>

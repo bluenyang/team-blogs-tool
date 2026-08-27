@@ -3,6 +3,8 @@ import type { RawSeriesItem, RawSeriesItemInPost } from './series.js';
 import type { RawTagItem, RawTagItemInPost } from './tag.js';
 
 export interface RawPostAuthor {
+  /** directus_users.id — blog_members에 없는 저자의 프로필을 만들 때 쓴다 */
+  id: string;
   first_name: string | null;
   last_name: string | null;
   avatar: {
@@ -42,7 +44,15 @@ export interface RawPostItem {
   }[];
 }
 
+export interface RawPostLink {
+  post_idx: number;
+  title: string;
+  slug: string;
+}
+
 export interface RawPostDetail {
+  prevPost?: RawPostLink[] | null;
+  nextPost?: RawPostLink[] | null;
   posts: {
     author_id: RawPostAuthor;
     post_idx: number;

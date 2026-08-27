@@ -1,5 +1,5 @@
 <template>
-  <th class="bg-table-head-bg px-4 py-3 whitespace-nowrap">
+  <th class="bg-glass-2 px-4 py-2.5 text-left font-mono text-[11.5px] font-semibold tracking-wider">
     <slot />
   </th>
 </template>

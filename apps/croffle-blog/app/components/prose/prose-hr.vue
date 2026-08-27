@@ -1,3 +1,3 @@
 <template>
-  <hr class="border-sidebar-border my-4" />
+  <hr class="border-border my-9 border-0 border-t" />
 </template>

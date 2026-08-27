@@ -1,40 +1,31 @@
 <script setup lang="ts">
-  interface SeriesBoxProps {
+  import type { SeriesItemInPost } from '@croffledev/directus-blog-core';
+
+  const { series, currentPostIdx } = defineProps<{
     series: SeriesItemInPost;
     currentPostIdx: number;
-  }
-
-  const { series, currentPostIdx } = defineProps<SeriesBoxProps>();
-  const { onNavigate, isPending } = useNavFeedback();
+  }>();
 
   const isExpanded = ref(false);
 
-  const posts = computed(() => {
-    const tempPosts = series.posts.map((post) => ({
-      ...post,
-      postIdx: Number(post.postIdx),
-    }));
-
-    return tempPosts.sort((a, b) => a.postIdx - b.postIdx);
-  });
+  const posts = computed(() =>
+    [...series.posts]
+      .map((post) => ({ ...post, postIdx: Number(post.postIdx) }))
+      .sort((a, b) => a.postIdx - b.postIdx),
+  );
 
   const currentIndex = computed(() =>
     posts.value.findIndex((post) => post.postIdx === currentPostIdx),
   );
 
+  /** 접힌 상태에서는 현재 편 앞뒤 1편씩만 보여준다 */
   const collapsedIndices = computed(() => {
     const list = posts.value;
     const index = currentIndex.value;
 
-    if (index < 0 || list.length <= 1) {
-      return list.map((_, i) => i);
-    }
-    if (index === 0) {
-      return [0, 1].filter((i) => i < list.length);
-    }
-    if (index === list.length - 1) {
-      return [list.length - 2, list.length - 1];
-    }
+    if (index < 0 || list.length <= 1) return list.map((_, i) => i);
+    if (index === 0) return [0, 1].filter((i) => i < list.length);
+    if (index === list.length - 1) return [list.length - 2, list.length - 1];
     return [index - 1, index, index + 1];
   });
 
@@ -43,72 +34,71 @@
   );
 
   const canToggle = computed(() => collapsedIndices.value.length < posts.value.length);
-
-  const hasHiddenBefore = computed(() => !isExpanded.value && (visibleIndices.value[0] ?? 0) > 0);
-
-  const hasHiddenAfter = computed(
-    () =>
-      !isExpanded.value &&
-      (visibleIndices.value[visibleIndices.value.length - 1] ?? 0) < posts.value.length - 1,
-  );
 </script>
 
 <template>
-  <div class="border-border bg-block-bg mb-12 rounded-xl border p-6">
-    <div class="text-muted-foreground font-jua mb-4 flex items-center text-sm">
-      <Icon name="lucide:layers" class="mr-2 size-4" />
-      <span>{{ '시리즈' }}</span>
-      <span class="px-2">{{ '·' }}</span>
-      <span>{{ series.name }}</span>
-      <span class="ml-2 text-sm font-normal">
-        {{ `(${series.postCount}개의 글)` }}
+  <section class="glass flex flex-col gap-3.5 rounded-xl p-5.5" aria-label="시리즈">
+    <div class="flex items-baseline justify-between gap-3">
+      <NuxtLink
+        :to="{ name: 'series-slug', params: { slug: series.slug } }"
+        class="font-display text-[15px] font-bold hover:opacity-80"
+      >
+        시리즈 · {{ series.name }}
+      </NuxtLink>
+      <span class="text-fg-40 shrink-0 font-mono text-[11px] font-medium">
+        {{ series.postCount ?? posts.length }}편
       </span>
     </div>
-    <ul class="space-y-2 ps-4">
-      <li v-if="hasHiddenBefore" class="text-muted-foreground ps-7 text-sm">···</li>
-      <li
-        v-for="index in visibleIndices"
-        :key="posts[index]!.postIdx"
-        class="flex items-start text-sm"
-      >
-        <span class="text-muted-foreground font-jua mt-0.5 mr-4">{{ index + 1 }}.</span>
-        <NuxtLink
-          v-if="posts[index]!.postIdx !== currentPostIdx"
-          :to="`/posts/${posts[index]!.postIdx}-${posts[index]!.slug}`"
-          :aria-busy="isPending(`post-${posts[index]!.postIdx}`)"
+
+    <ul class="flex flex-col gap-1.5">
+      <li v-for="index in visibleIndices" :key="posts[index]!.postIdx">
+        <component
+          :is="posts[index]!.postIdx === currentPostIdx ? 'div' : 'NuxtLink'"
+          :to="posts[index]!.postIdx === currentPostIdx ? undefined : postPath(posts[index]!)"
+          :aria-current="posts[index]!.postIdx === currentPostIdx ? 'page' : undefined"
           :class="
             cn(
-              'text-muted-foreground hover:text-primary underline-offset-4 transition-all hover:underline',
-              isPending(`post-${posts[index]!.postIdx}`) && 'pointer-events-none opacity-60',
+              'border-border flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors',
+              posts[index]!.postIdx === currentPostIdx
+                ? 'bg-[oklch(0.785_0.104_69.8/0.14)]'
+                : 'bg-glass-2 hover:bg-glass-hover',
             )
           "
-          @click="onNavigate(`post-${posts[index]!.postIdx}`)"
         >
-          {{ posts[index]!.title }}
-        </NuxtLink>
-        <span v-else class="text-foreground flex w-full items-center justify-between">
-          <span class="font-bold">
+          <span
+            :class="
+              cn(
+                'w-4 shrink-0 font-mono text-[11px] font-semibold',
+                posts[index]!.postIdx === currentPostIdx ? 'text-primary' : 'text-fg-40',
+              )
+            "
+          >
+            {{ index + 1 }}
+          </span>
+          <span class="text-fg-80 min-w-0 flex-1 text-[13px] leading-[1.45]">
             {{ posts[index]!.title }}
           </span>
-          <span class="me-4">
-            {{ '현재' }}
+          <span
+            v-if="posts[index]!.postIdx === currentPostIdx"
+            class="text-primary shrink-0 font-mono text-[10.5px]"
+          >
+            현재
           </span>
-        </span>
+        </component>
       </li>
-      <li v-if="hasHiddenAfter" class="text-muted-foreground ps-7 text-sm">···</li>
     </ul>
+
     <button
       v-if="canToggle"
       type="button"
-      class="text-muted-foreground hover:text-primary mt-4 flex items-center gap-1 ps-4 text-sm transition-colors"
+      class="text-fg-50 hover:text-foreground flex cursor-pointer items-center gap-1.5 text-[12px] transition-colors"
       @click="isExpanded = !isExpanded"
     >
       <Icon
         name="lucide:chevron-down"
-        class="size-4 transition-transform"
-        :class="{ 'rotate-180': isExpanded }"
+        :class="cn('size-4 transition-transform', isExpanded && 'rotate-180')"
       />
-      <span>{{ isExpanded ? '접기' : `전체 ${series.postCount}개 보기` }}</span>
+      {{ isExpanded ? '접기' : `전체 ${posts.length}편 보기` }}
     </button>
-  </div>
+  </section>
 </template>

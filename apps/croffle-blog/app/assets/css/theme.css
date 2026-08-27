@@ -1,231 +1,291 @@
-@custom-variant dark (&:where(.dark, .dark *));
+/*
+ * Croffle Dev. 블로그 디자인 토큰.
+ *
+ * 웜 다크 + 글래스모피즘 단일 테마다. 라이트 시안이 없어 다크로 고정하며,
+ * 라이트가 필요해지면 :root 값을 갈아끼우고 .dark 블록을 되살리면 된다.
+ */
 
 :root {
-  --font-size: 16px;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
   --radius: 0.75rem;
 
-  --background: var(--color-neutral-100);
-  --foreground: var(--color-neutral-950);
+  /* 브랜드 캐러멜 */
+  --primary: oklch(0.785 0.104 69.8);
+  --primary-foreground: #221a13;
+  /* 어두운 accent 배경 위에서 읽히는 밝은 accent */
+  --primary-soft: oklch(0.85 0.09 72);
 
-  --card: var(--color-white);
-  --card-foreground: var(--color-neutral-950);
-  --card-hover: var(--color-neutral-100);
+  --background: #171310;
+  --foreground: #f4efe9;
 
-  --popover: var(--color-white);
-  --popover-foreground: var(--color-neutral-950);
+  /* 아바타 스택 테두리 등 배경 위에 겹치는 요소용 불투명 배경색 */
+  --surface: #1d1814;
 
-  --primary: var(--color-sky-600);
-  --primary-foreground: var(--color-white);
+  --glow-1: oklch(0.785 0.104 69.8 / 0.2);
+  --glow-2: oklch(0.62 0.09 40 / 0.16);
 
-  --secondary: var(--color-neutral-200);
-  --secondary-foreground: var(--color-neutral-950);
+  /* 본문 / 부제 / 요약 / 메타 */
+  --fg-80: rgba(244, 239, 233, 0.8);
+  --fg-60: rgba(244, 239, 233, 0.6);
+  --fg-50: rgba(244, 239, 233, 0.5);
+  --fg-40: rgba(244, 239, 233, 0.4);
+  --fg-35: rgba(244, 239, 233, 0.35);
 
-  --muted: var(--color-neutral-200);
-  --muted-foreground: var(--color-neutral-500);
+  /* 카드 / 헤더·칩 / 팔레트 */
+  --glass-1: rgba(255, 255, 255, 0.045);
+  --glass-2: rgba(255, 255, 255, 0.06);
+  --glass-3: rgba(255, 255, 255, 0.07);
+  --glass-hover: rgba(255, 255, 255, 0.07);
 
-  --accent: var(--color-sky-500);
-  --accent-foreground: var(--color-white);
+  --border-1: rgba(255, 255, 255, 0.08);
+  --border-2: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.14);
 
-  --destructive: var(--color-red-600);
-  --destructive-foreground: var(--color-white);
+  --code-bg: rgba(0, 0, 0, 0.35);
+  --syntax-number: oklch(0.72 0.11 230);
+  --syntax-comment: rgba(244, 239, 233, 0.35);
 
-  --blockquote-accent: var(--color-emerald-400);
-  --codeblock-accent: var(--color-cyan-400);
-  --codeblock-bg: var(--color-neutral-700);
-  --block-bg: var(--color-neutral-200);
-  --code-bg: var(--color-neutral-300);
+  --ring: oklch(0.785 0.104 69.8);
 
-  --table-bg: transparent;
-  --table-head-bg: var(--color-neutral-200);
-  --table-row-even-bg: var(--color-neutral-100);
-  --table-row-odd-bg: transparent;
-  --table-row-hover-bg: color-mix(in oklch, var(--color-primary) 15%, transparent);
-  --table-cell-border: var(--color-neutral-300);
-
-  --border: var(--color-neutral-200);
-  --input: transparent;
-  --input-background: color-mix(in oklch, var(--color-neutral-950) 8%, transparent);
-  --input-background-focus: color-mix(in oklch, var(--color-neutral-950) 15%, transparent);
-  --switch-background: var(--color-neutral-300);
-  --ring: var(--color-blue-600);
-
-  --chart-1: var(--color-orange-500);
-  --chart-2: var(--color-teal-500);
-  --chart-3: var(--color-blue-700);
-  --chart-4: var(--color-amber-400);
-  --chart-5: var(--color-lime-500);
-
-  --sidebar: var(--color-neutral-50);
-  --sidebar-foreground: var(--color-neutral-900);
-  --sidebar-primary: var(--color-sky-500);
-  --sidebar-primary-foreground: var(--color-white);
-  --sidebar-accent: var(--color-neutral-200);
-  --sidebar-accent-hover: var(--color-neutral-300);
-  --sidebar-accent-foreground: var(--color-neutral-800);
-  --sidebar-border: var(--color-neutral-200);
-  --sidebar-ring: var(--color-blue-600);
-
-  --header-bg: color-mix(in oklch, var(--color-neutral-50) 70%, transparent);
-  --header-tp: color-mix(in oklch, var(--color-neutral-50) 50%, transparent);
-}
-
-.dark {
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-
-  --background: var(--color-neutral-900);
-  --foreground: var(--color-neutral-100);
-
-  --card: var(--color-neutral-800);
-  --card-foreground: var(--color-neutral-100);
-  --card-hover: color-mix(in oklch, var(--color-neutral-800) 95%, var(--color-neutral-100));
-
-  --popover: var(--color-neutral-900);
-  --popover-foreground: var(--color-neutral-100);
-
-  --primary: var(--color-sky-500);
-  --primary-foreground: var(--color-white);
-
-  --secondary: var(--color-neutral-800);
-  --secondary-foreground: var(--color-neutral-200);
-
-  --muted: var(--color-neutral-800);
-  --muted-foreground: var(--color-neutral-400);
-
-  --accent: var(--color-sky-400);
-  --accent-foreground: var(--color-neutral-950);
-
-  --destructive: var(--color-red-700);
-  --destructive-foreground: var(--color-red-50);
-
-  --blockquote-accent: var(--color-emerald-300);
-  --codeblock-accent: var(--color-cyan-300);
-  --codeblock-bg: var(--color-neutral-800);
-  --block-bg: var(--color-neutral-800);
-  --code-bg: var(--color-neutral-700);
-
-  --table-bg: transparent;
-  --table-head-bg: var(--color-neutral-700);
-  --table-row-even-bg: var(--color-neutral-800);
-  --table-row-odd-bg: transparent;
-  --table-row-hover-bg: color-mix(in oklch, var(--color-primary) 20%, transparent);
-  --table-cell-border: var(--color-neutral-700);
-
-  --border: var(--color-neutral-800);
-  --input: var(--color-neutral-800);
-  --input-background: color-mix(in oklch, var(--color-neutral-50) 10%, transparent);
-  --input-background-focus: color-mix(in oklch, var(--color-neutral-50) 20%, transparent);
-  --switch-background: var(--color-neutral-700);
-  --ring: var(--color-blue-500);
-
-  --chart-1: var(--color-blue-500);
-  --chart-2: var(--color-sky-400);
-  --chart-3: var(--color-lime-500);
-  --chart-4: var(--color-fuchsia-500);
-  --chart-5: var(--color-rose-500);
-
-  --sidebar: var(--color-neutral-800);
-  --sidebar-foreground: var(--color-neutral-100);
-  --sidebar-primary: var(--color-sky-500);
-  --sidebar-primary-foreground: var(--color-neutral-950);
-  --sidebar-accent: var(--color-neutral-600);
-  --sidebar-accent-hover: var(--color-neutral-500);
-  --sidebar-accent-foreground: var(--color-neutral-200);
-  --sidebar-border: var(--color-neutral-600);
-  --sidebar-ring: var(--color-blue-500);
-
-  --header-bg: color-mix(in oklch, var(--color-neutral-800) 70%, transparent);
-  --header-tp: color-mix(in oklch, var(--color-neutral-700) 50%, transparent);
+  /* 글래스 상단 하이라이트 — 유리 느낌의 핵심이라 생략하지 않는다 */
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-glass-strong: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --shadow-card: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+  --shadow-feature: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 50px -30px rgba(0, 0, 0, 0.8);
+  --shadow-palette: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 40px 80px -40px rgba(0, 0, 0, 0.9);
 }
 
 @theme inline {
-  --font-display: 'Noto Serif KR', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-tektur: 'Tektur', sans-serif;
-  --font-pacifico: 'Pacifico', cursive;
-  --font-jua: 'Jua', sans-serif;
-  --font-cascadia-code: 'Cascadia Code', monospace;
+  --font-sans: 'Noto Sans KR', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Noto Sans KR', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-card-hover: var(--card-hover);
-
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
 
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-fg-80: var(--fg-80);
+  --color-fg-60: var(--fg-60);
+  --color-fg-50: var(--fg-50);
+  --color-fg-40: var(--fg-40);
+  --color-fg-35: var(--fg-35);
+  --color-muted-foreground: var(--fg-50);
 
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-glass: var(--glass-1);
+  --color-glass-2: var(--glass-2);
+  --color-glass-3: var(--glass-3);
+  --color-glass-hover: var(--glass-hover);
 
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border-1);
+  --color-border-strong: var(--border-2);
+  --color-border-hover: var(--border-hover);
 
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-blockquote-accent: var(--blockquote-accent);
-  --color-codeblock-accent: var(--codeblock-accent);
-  --color-codeblock-bg: var(--codeblock-bg);
-  --color-block-bg: var(--block-bg);
   --color-code-bg: var(--code-bg);
-
-  --color-table-bg: var(--table-bg);
-  --color-table-head-bg: var(--table-head-bg);
-  --color-table-row-even-bg: var(--table-row-even-bg);
-  --color-table-row-odd-bg: var(--table-row-odd-bg);
-  --color-table-row-hover-bg: var(--table-row-hover-bg);
-  --color-table-cell-border: var(--table-cell-border);
-
-  --color-border: var(--border);
-
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-input-background-focus: var(--input-background-focus);
-  --color-switch-background: var(--switch-background);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-comment: var(--syntax-comment);
   --color-ring: var(--ring);
 
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  /* 핸드오프 타입 스케일 */
+  --text-meta: 10.5px;
+  --text-meta--line-height: 1.5;
+  --text-meta-lg: 11.5px;
+  --text-meta-lg--line-height: 1.5;
+  --text-label: 12.5px;
+  --text-label--line-height: 1.65;
+  --text-body: 13.5px;
+  --text-body--line-height: 1.7;
+  --text-lead: 15.5px;
+  --text-lead--line-height: 1.75;
+  --text-card-title: 16px;
+  --text-card-title--line-height: 1.4;
+  --text-row-title: 19px;
+  --text-row-title--line-height: 1.35;
+  --text-section: 21px;
+  --text-section--line-height: 1.35;
+  --text-feature: 31px;
+  --text-feature--line-height: 1.25;
+  --text-article: 34px;
+  --text-article--line-height: 1.25;
+  --text-hero: 44px;
+  --text-hero--line-height: 1.16;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
 
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-hover: var(--sidebar-accent-hover);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  --color-header-bg: var(--header-bg);
-  --color-header-tp: var(--header-tp);
+  --shadow-glass: var(--shadow-glass);
+  --shadow-card: var(--shadow-card);
+  --shadow-feature: var(--shadow-feature);
+  --shadow-palette: var(--shadow-palette);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    scroll-behavior: smooth;
+    /* 앵커로 이동할 때 떠 있는 독 헤더에 제목이 가리지 않도록 */
+    scroll-padding-top: 6rem;
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: oklch(0.785 0.104 69.8 / 0.3);
+    color: var(--foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* 기본 글래스 카드 */
+  .glass {
+    background: var(--glass-1);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border-1);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* 강조 카드(피처드·프로필) */
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-2);
+    box-shadow: var(--shadow-feature);
+  }
+
+  /* 떠 있는 독 헤더 / 하단 탭바 */
+  .glass-dock {
+    background: var(--glass-2);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid var(--border-2);
+    box-shadow: var(--shadow-glass-strong);
+  }
+
+  /* ⌘K 팔레트 */
+  .glass-palette {
+    background: var(--glass-3);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-palette);
+  }
+
+  /* 카드 hover — 제목 색은 바꾸지 않는다 */
+  .glass-interactive {
+    transition:
+      background-color 200ms ease-out,
+      border-color 200ms ease-out,
+      transform 200ms ease-out;
+  }
+
+  .glass-interactive:hover {
+    background-color: var(--glass-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+
+  /* 대문자 모노 라벨 (CATEGORIES, ON THIS PAGE …) */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--fg-40);
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-1);
+    color: var(--fg-60);
+    transition:
+      background-color 200ms ease-out,
+      color 200ms ease-out;
+  }
+
+  a.chip:hover,
+  button.chip:hover {
+    background: var(--glass-hover);
+    color: var(--foreground);
+  }
+
+  .chip-active {
+    background: var(--primary);
+    border-color: transparent;
+    color: var(--primary-foreground);
+  }
+
+  a.chip-active:hover,
+  button.chip-active:hover {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  /*
+   * 오버레이(팔레트·드로어)는 Vue <Transition> 대신 CSS 진입 애니메이션만 쓴다.
+   * Teleport 안의 Transition은 페이지 전환과 겹칠 때 leave 훅이 깨져 노드가 DOM에 남는다.
+   */
+  .animate-overlay-in {
+    animation: overlay-in 150ms ease-out;
+  }
+
+  .animate-drawer-in {
+    animation: drawer-in 200ms ease-out;
+  }
+
+  @keyframes overlay-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  /* 로딩 스켈레톤 — 스피너 대신 카드 골격을 유지해 레이아웃 시프트를 없앤다 */
+  .skeleton {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
   }
 }
