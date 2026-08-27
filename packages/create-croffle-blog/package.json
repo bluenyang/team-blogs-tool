@@ -6,6 +6,11 @@
   "bin": {
     "create-croffle-blog": "./bin/create-croffle-blog.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/team-croffle/blogs.git",
+    "directory": "packages/create-croffle-blog"
+  },
   "files": [
     "bin",
     "src",

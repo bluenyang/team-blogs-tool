@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Nuxt layer: Nitro API routes and composables for Croffle Directus blogs",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/team-croffle/blogs.git",
+    "directory": "packages/nuxt-directus-blog"
+  },
   "exports": {
     ".": "./nuxt.config.ts"
   },

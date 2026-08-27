@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Directus GraphQL query, mapper, and DTO types for Croffle blogs",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/team-croffle/blogs.git",
+    "directory": "packages/directus-blog-core"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

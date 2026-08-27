@@ -2,6 +2,10 @@
   "name": "@croffledev/blogs",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/team-croffle/blogs.git"
+  },
   "scripts": {
     "dev": "pnpm --filter @croffledev/template-blog dev",
     "build": "pnpm -r --if-present build",
