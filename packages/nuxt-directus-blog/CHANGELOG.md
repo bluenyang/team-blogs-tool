@@ -1,5 +1,12 @@
 # @croffledev/nuxt-directus-blog
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [d4ea625]
+  - @croffledev/directus-blog-core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

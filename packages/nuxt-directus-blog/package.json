@@ -1,6 +1,6 @@
 {
   "name": "@croffledev/nuxt-directus-blog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nuxt layer: Nitro API routes and composables for Croffle Directus blogs",
   "type": "module",
   "repository": {
