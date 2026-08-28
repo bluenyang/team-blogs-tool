@@ -7,3 +7,12 @@ allowBuilds:
   workerd: true
 minimumReleaseAgeExclude:
   - '@types/node@26.3.0'
+overrides:
+  # GHSA-2v37-7h3g-55p8 (high) — postcss가 끌어오는 nanoid.
+  # postcss의 선언 범위(^3.3.17) 안이라 패치 버전만 올린다.
+  nanoid@<3.3.18: '^3.3.18'
+  # GHSA-g7r4-m6w7-qqqr (low) — @nuxt/fonts > fontless가 끌어오는 esbuild.
+  # fontless@0.2.1이 ^0.27.0을 선언하고 상류에 수정 릴리스가 없어 minor를 넘겨 고정한다.
+  # vite는 이미 0.28.1을 쓰므로 버전이 하나로 합쳐진다. 제거 조건: @nuxt/fonts가
+  # esbuild ^0.28을 쓰는 fontless로 올라가면 이 항목을 지운다.
+  esbuild@<0.28.1: '^0.28.1'
