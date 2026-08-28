@@ -59,7 +59,7 @@
             to="/authors"
             class="text-fg-60 hover:text-foreground text-[12.5px] transition-colors"
           >
-            필진
+            글쓴이
           </NuxtLink>
         </nav>
 

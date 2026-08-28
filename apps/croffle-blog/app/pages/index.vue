@@ -90,9 +90,9 @@
       </div>
     </section>
 
-    <!-- 필진 -->
+    <!-- 글쓴이 -->
     <section v-if="authorsPending || authors.length" class="flex flex-col gap-5 pb-11.5">
-      <SectionHeader title="필진" more-to="/authors" more-label="필진 소개" />
+      <SectionHeader title="글쓴이" more-to="/authors" more-label="글쓴이 소개" />
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <template v-if="authorsPending && !authors.length">
           <div

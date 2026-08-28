@@ -2,8 +2,8 @@
 export const ROLE_LABELS: Record<string, string> = {
   owner: '팀장',
   admin: '운영',
-  editor: '필진',
-  author: '필진',
+  editor: '글쓴이',
+  author: '글쓴이',
   member: '멤버',
 };
 

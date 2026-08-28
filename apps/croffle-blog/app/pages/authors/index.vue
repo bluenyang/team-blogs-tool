@@ -10,9 +10,9 @@
   });
 
   useSeoMeta({
-    title: '필진',
+    title: '글쓴이',
     description: pageDesc,
-    ogTitle: '필진',
+    ogTitle: '글쓴이',
     ogDescription: pageDesc,
     ogUrl: canonicalUrl,
     ogType: 'website',
@@ -23,7 +23,7 @@
   useJsonLd(() => ({
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: '필진',
+    name: '글쓴이',
     itemListElement: authors.value.map((author, index) => ({
       '@type': 'ListItem',
       position: index + 1,
@@ -36,7 +36,7 @@
 <template>
   <div class="mx-auto w-full max-w-7xl px-5 pt-4 pb-11.5 sm:px-10">
     <header class="flex flex-col gap-2 pb-6">
-      <h1 class="font-display text-[30px] font-extrabold tracking-[-0.03em]">필진</h1>
+      <h1 class="font-display text-[30px] font-extrabold tracking-[-0.03em]">글쓴이</h1>
       <p class="text-fg-50 text-[13.5px] leading-[1.7]">{{ description }}</p>
     </header>
 
@@ -59,11 +59,11 @@
       v-else-if="error"
       icon="lucide:alert-circle"
       tone="error"
-      title="필진 정보를 불러오지 못했습니다."
+      title="글쓴이 정보를 불러오지 못했습니다."
       :description="error.message"
     />
 
-    <EmptyState v-else-if="!authors.length" icon="lucide:users" title="등록된 필진이 없습니다." />
+    <EmptyState v-else-if="!authors.length" icon="lucide:users" title="등록된 글쓴이가 없습니다." />
 
     <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
       <AuthorCard v-for="author in authors" :key="author.id" :author="author" />

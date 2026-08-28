@@ -115,10 +115,10 @@
       v-else-if="error || !author"
       icon="lucide:user-x"
       tone="error"
-      title="필진을 찾을 수 없습니다."
+      title="글쓴이를 찾을 수 없습니다."
     >
       <NuxtLink to="/authors" class="chip mt-2 rounded-full px-4 py-2.5 text-[12px]">
-        필진 전체 보기
+        글쓴이 전체 보기
       </NuxtLink>
     </EmptyState>
 
@@ -263,7 +263,7 @@
           </div>
 
           <div v-if="others.length" class="glass flex flex-col gap-3 rounded-xl p-5">
-            <span class="mono-label">다른 필진</span>
+            <span class="mono-label">다른 글쓴이</span>
             <NuxtLink
               v-for="other in others"
               :key="other.id"

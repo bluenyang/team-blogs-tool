@@ -11,14 +11,14 @@ export const PRIMARY_NAV: NavItem[] = [
   { label: '전체 글', to: '/posts', icon: 'lucide:layout-grid', prefix: true },
   { label: '시리즈', to: '/series', icon: 'lucide:layers', prefix: true },
   { label: '태그', to: '/tags', icon: 'lucide:tag', prefix: true },
-  { label: '필진', to: '/authors', icon: 'lucide:users', prefix: true },
+  { label: '글쓴이', to: '/authors', icon: 'lucide:users', prefix: true },
 ];
 
 export const MOBILE_NAV: NavItem[] = [
   { label: '홈', to: '/', icon: 'lucide:home' },
   { label: '시리즈', to: '/series', icon: 'lucide:layers', prefix: true },
   { label: '태그', to: '/tags', icon: 'lucide:tag', prefix: true },
-  { label: '필진', to: '/authors', icon: 'lucide:users', prefix: true },
+  { label: '글쓴이', to: '/authors', icon: 'lucide:users', prefix: true },
 ];
 
 export function isNavActive(item: NavItem, path: string): boolean {

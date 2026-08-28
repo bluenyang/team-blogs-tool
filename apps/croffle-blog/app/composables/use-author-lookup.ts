@@ -1,7 +1,7 @@
 import type { AuthorItem, PostAuthor } from '@croffledev/directus-blog-core';
 
 /**
- * 글에 붙어 오는 저자(PostAuthor)를 필진 로스터와 이어 준다.
+ * 글에 붙어 오는 저자(PostAuthor)를 글쓴이 로스터와 이어 준다.
  *
  * PostAuthor에는 Directus 유저의 로마자 이름(예: "Ahn Kai")밖에 없어서, 실명·역할은
  * 로스터(homepage_team_members)에서 가져온다. 로스터는 이미 캐시된 payload라 추가 요청이 없다.
