@@ -1,0 +1,54 @@
+name: Secret Scan
+
+on:
+  pull_request:
+    branches: [master, main]
+  push:
+    branches: [master, main]
+  schedule:
+    # 매주 월요일 03:00 UTC — 전체 히스토리 스캔
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: secret-scan-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  diff:
+    name: Scan changed commits
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # TruffleHog가 base..head 범위를 계산하려면 전체 히스토리가 필요합니다.
+          fetch-depth: 0
+
+      - name: TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # base/head를 비워두면 액션이 이벤트에서 알아서 범위를 잡습니다.
+          extra_args: --results=verified,unknown
+
+  full:
+    name: Scan full history
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # 첫 커밋부터 HEAD까지 전부 훑습니다.
+          base: ''
+          head: ${{ github.ref_name }}
+          extra_args: --results=verified,unknown

@@ -1,0 +1,28 @@
+name: Labeler
+
+on:
+  # pull_request_target — 포크에서 온 PR에도 라벨을 붙이기 위해 필요합니다.
+  # 이 워크플로는 PR 코드를 checkout하거나 실행하지 않습니다.
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: labeler-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  # labeler.yml에 있지만 저장소에 없는 라벨을 액션이 직접 만들려면 필요합니다.
+  # 이 권한을 빼면 라벨을 미리 만들어 둬야 합니다.
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/labeler@v7
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: true

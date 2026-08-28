@@ -1,0 +1,67 @@
+# actions/labeler@v7 설정 — PR의 변경 경로로 라벨을 붙입니다.
+# 라벨 이름은 AGENTS.md §6의 커밋 scope와 맞춰 두었습니다.
+# 저장소에 없는 라벨은 워크플로가 자동으로 만듭니다 (permissions에 issues: write가 있어야 합니다).
+# 다만 자동 생성된 라벨은 색/설명이 기본값이라, 보기 좋게 하려면 나중에 손보세요.
+
+core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'packages/directus-blog-core/**'
+
+layer:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'packages/nuxt-directus-blog/**'
+
+cli:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'packages/create-croffle-blog/**'
+
+template-blog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/template-blog/**'
+
+croffle-blog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/croffle-blog/**'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - '.husky/**'
+
+release:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.changeset/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - 'LICENSE'
+
+deps:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'pnpm-lock.yaml'
+          - 'pnpm-workspace.yaml'
+          - '**/package.json'
+
+tooling:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.oxlintrc.json'
+          - '.oxfmtrc.json'
+          - 'tsconfig.base.json'
+          - '**/tsconfig*.json'
+
+ui:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/*/app/**'
+          - 'packages/nuxt-directus-blog/app/**'

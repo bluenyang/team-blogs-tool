@@ -1,0 +1,30 @@
+# CODEOWNERS — 리뷰 자동 요청 규칙
+# https://docs.github.com/en/repositories/managing-your-repositories-security-and-analysis-settings/about-code-owners
+#
+# 마지막에 매치된 규칙이 이깁니다. 아래로 갈수록 더 구체적인 경로입니다.
+
+# 기본 소유자 — 아래에서 덮어쓰지 않은 모든 경로
+*                                   @bluenyang
+
+# 배포 대상 패키지 — 공개 API가 바뀌므로 항상 리뷰
+/packages/directus-blog-core/       @bluenyang
+/packages/nuxt-directus-blog/       @bluenyang
+/packages/create-croffle-blog/      @bluenyang
+
+# 운영 블로그 — Cloudflare Workers 배포와 직결
+/apps/croffle-blog/                 @bluenyang
+
+# CI · 릴리스 · 시크릿 스캔
+/.github/                           @bluenyang
+/.changeset/                        @bluenyang
+
+# 툴체인 · 규칙 문서 — 바꾸기 전 합의가 필요한 것들
+/.oxlintrc.json                     @bluenyang
+/.oxfmtrc.json                      @bluenyang
+/tsconfig.base.json                 @bluenyang
+/pnpm-workspace.yaml                @bluenyang
+/pnpm-lock.yaml                     @bluenyang
+/package.json                       @bluenyang
+/AGENTS.md                          @bluenyang
+/CLAUDE.md                          @bluenyang
+/LICENSE                            @bluenyang
