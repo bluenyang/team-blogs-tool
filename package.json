@@ -1,6 +1,7 @@
 {
   "name": "@croffledev/blogs",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "repository": {
     "type": "git",

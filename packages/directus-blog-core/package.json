@@ -1,6 +1,7 @@
 {
   "name": "@croffledev/directus-blog-core",
   "version": "1.0.1",
+  "license": "MIT",
   "description": "Directus GraphQL query, mapper, and DTO types for Croffle blogs",
   "type": "module",
   "repository": {

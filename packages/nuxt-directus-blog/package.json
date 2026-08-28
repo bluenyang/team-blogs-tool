@@ -1,6 +1,7 @@
 {
   "name": "@croffledev/nuxt-directus-blog",
   "version": "1.0.1",
+  "license": "MIT",
   "description": "Nuxt layer: Nitro API routes and composables for Croffle Directus blogs",
   "type": "module",
   "repository": {

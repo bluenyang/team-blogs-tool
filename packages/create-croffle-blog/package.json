@@ -1,6 +1,7 @@
 {
   "name": "create-croffle-blog",
   "version": "0.1.1",
+  "license": "MIT",
   "description": "Scaffold a Croffle Directus Nuxt blog from the official template",
   "type": "module",
   "bin": {
