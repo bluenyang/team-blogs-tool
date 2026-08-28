@@ -1,5 +1,11 @@
 # @croffledev/directus-blog-core
 
+## 1.0.2
+
+### Patch Changes
+
+- 17fec0e: Declare the MIT license: add a `license` field to package.json and ship a LICENSE file in each published tarball.
+
 ## 1.0.1
 
 ### Patch Changes

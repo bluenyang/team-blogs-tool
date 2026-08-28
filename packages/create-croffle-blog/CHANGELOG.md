@@ -1,5 +1,11 @@
 # create-croffle-blog
 
+## 0.1.2
+
+### Patch Changes
+
+- 17fec0e: Declare the MIT license: add a `license` field to package.json and ship a LICENSE file in each published tarball.
+
 ## 0.1.1
 
 ### Patch Changes
